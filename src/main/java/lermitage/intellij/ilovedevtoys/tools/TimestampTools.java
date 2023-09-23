@@ -434,7 +434,7 @@ public class TimestampTools {
         zoneIdAndFlag.put("Europe/Helsinki", "fi");
         zoneIdAndFlag.put("Europe/Istanbul", "tr");
         zoneIdAndFlag.put("Europe/Kaliningrad", "ru");
-        zoneIdAndFlag.put("Europe/Kiev", "ua");
+        zoneIdAndFlag.put("Europe/Kyiv", "ua");
         zoneIdAndFlag.put("Europe/Lisbon", "pt");
         zoneIdAndFlag.put("Europe/Ljubljana", "si");
         zoneIdAndFlag.put("Europe/London", "gb");

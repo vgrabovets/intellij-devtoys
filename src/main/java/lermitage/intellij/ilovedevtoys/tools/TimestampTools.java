@@ -1,6 +1,7 @@
 package lermitage.intellij.ilovedevtoys.tools;
 
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -82,7 +83,51 @@ public class TimestampTools {
         String utcDatetimeAsText = DATETIME_FORMAT_24H.format(localDateTime.atZone(ZoneId.systemDefault())
             .withZoneSameInstant(ZoneId.of("UTC")));
 
-        return zoneIdAsStr + " (GMT " + zoneOffsetText + ") Date and Time:\n" + datetimeAsText + "\n\nUTC Date and Time:\n" + utcDatetimeAsText;
+        String relativeTimeAsText = getRelativeTime(localDateTime);
+
+        return zoneIdAsStr + " (GMT " + zoneOffsetText + ") Date and Time:\n" + datetimeAsText +
+            "\n\nUTC Date and Time:\n" + utcDatetimeAsText +
+            "\n\nRelative:\n" + relativeTimeAsText;
+    }
+
+    private static String getRelativeTime(LocalDateTime timestamp) {
+        LocalDateTime timestampNow = LocalDateTime.now(ZoneId.systemDefault());
+        Duration duration = Duration.between(timestamp, timestampNow);
+
+        String pastOrFuture = timestamp.isAfter(timestampNow) ? "in the future" : "ago";
+        duration = duration.abs();
+        long seconds = duration.getSeconds();
+
+        if (seconds == 0) {
+            return "Right now";
+        }
+
+        if (seconds < 60) {
+            return String.format("%d second%s %s", seconds, seconds == 1 ? "" : "s", pastOrFuture);
+        }
+
+        long minutes = duration.toMinutes();
+        if (minutes < 60) {
+            return String.format("%d minute%s %s", minutes, minutes == 1 ? "" : "s", pastOrFuture);
+        }
+
+        long hours = duration.toHours();
+        if (hours < 24) {
+            return String.format("%d hour%s %s", hours, hours == 1 ? "" : "s", pastOrFuture);
+        }
+
+        int days = (int) duration.toDays();
+        if (days < 31) {
+            return String.format("%d day%s %s", days, days == 1 ? "" : "s", pastOrFuture);
+        }
+
+        int months = Math.round((float) days / 30);
+        if (months < 12) {
+            return String.format("~%d month%s %s", months, months == 1 ? "" : "s", pastOrFuture);
+        }
+
+        int years = Math.round((float) days / 365);
+        return String.format("~%d year%s %s", years, years == 1 ? "" : "s", pastOrFuture);
     }
 
     public record TimestampFields(long year, long month, long day, long hours, long minutes, long seconds, long millis) {

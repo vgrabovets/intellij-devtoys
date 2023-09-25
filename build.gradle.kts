@@ -76,6 +76,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:$junitPlatformLauncher")
+    testImplementation("org.mockito:mockito-core:5.5.0")
 }
 
 intellij {

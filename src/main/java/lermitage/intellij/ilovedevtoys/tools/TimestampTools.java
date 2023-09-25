@@ -90,7 +90,7 @@ public class TimestampTools {
             "\n\nRelative:\n" + relativeTimeAsText;
     }
 
-    private static String getRelativeTime(LocalDateTime timestamp) {
+    public static String getRelativeTime(LocalDateTime timestamp) {
         LocalDateTime timestampNow = LocalDateTime.now(ZoneId.systemDefault());
         Duration duration = Duration.between(timestamp, timestampNow);
 
@@ -123,11 +123,11 @@ public class TimestampTools {
 
         int months = Math.round((float) days / 30);
         if (months < 12) {
-            return String.format("~%d month%s %s", months, months == 1 ? "" : "s", pastOrFuture);
+            return String.format("%d month%s %s", months, months == 1 ? "" : "s", pastOrFuture);
         }
 
         int years = Math.round((float) days / 365);
-        return String.format("~%d year%s %s", years, years == 1 ? "" : "s", pastOrFuture);
+        return String.format("%d year%s %s", years, years == 1 ? "" : "s", pastOrFuture);
     }
 
     public record TimestampFields(long year, long month, long day, long hours, long minutes, long seconds, long millis) {
@@ -434,7 +434,7 @@ public class TimestampTools {
         zoneIdAndFlag.put("Europe/Helsinki", "fi");
         zoneIdAndFlag.put("Europe/Istanbul", "tr");
         zoneIdAndFlag.put("Europe/Kaliningrad", "ru");
-        zoneIdAndFlag.put("Europe/Kyiv", "ua");
+        zoneIdAndFlag.put("Europe/Kiev", "ua");
         zoneIdAndFlag.put("Europe/Lisbon", "pt");
         zoneIdAndFlag.put("Europe/Ljubljana", "si");
         zoneIdAndFlag.put("Europe/London", "gb");

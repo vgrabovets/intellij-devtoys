@@ -43,4 +43,26 @@ class JSONStringToolsTest {
                 }
                 """));
     }
+
+    @Test
+    public void shouldPrettyPrintJson() {
+        String uglyJsonString = "{\"one\":\"AAA\",\"two\":[\"BBB\",\"CCC\"],\"three\":{\"four\":\"DDD\",\"five\":[\"EEE\",\"FFF\"]}}";
+        String formattedJsonString = JSONStringTools.prettyPrintJson(uglyJsonString);
+        String expectedPrettyJson = """
+            {
+              "one": "AAA",
+              "two": [
+                "BBB",
+                "CCC"
+              ],
+              "three": {
+                "four": "DDD",
+                "five": [
+                  "EEE",
+                  "FFF"
+                ]
+              }
+            }""";
+        assertEquals(expectedPrettyJson, formattedJsonString);
+    }
 }

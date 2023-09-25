@@ -2,6 +2,8 @@ package lermitage.intellij.ilovedevtoys.tools;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class JSONStringTools {
 
@@ -18,5 +20,11 @@ public class JSONStringTools {
         } catch (Exception e) {
             return "Error: " + e.getMessage();
         }
+    }
+
+    public static String prettyPrintJson(String jsonString) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Object jsonObject = gson.fromJson(jsonString, Object.class);
+        return gson.toJson(jsonObject);
     }
 }

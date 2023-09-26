@@ -23,8 +23,13 @@ public class JSONStringTools {
     }
 
     public static String prettyPrintJson(String jsonString) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        Object jsonObject = gson.fromJson(jsonString, Object.class);
-        return gson.toJson(jsonObject);
+        try {
+            if (jsonString.isBlank()) return "";
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            Object jsonObject = gson.fromJson(jsonString, Object.class);
+            return gson.toJson(jsonObject);
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
     }
 }

@@ -65,4 +65,18 @@ class JSONStringToolsTest {
             }""";
         assertEquals(expectedPrettyJson, formattedJsonString);
     }
+
+    @Test
+    public void shouldPrettyPrintJsonOutputError() {
+        String invalidJsonString = "{\"one\":\"AAA\",\"two\":[\"BBB\",\"CCC\"],\"three\":{\"four\":\"DDD\",\"five\":[\"EEE\",\"FFF\"]}";
+        String formattedJsonString = JSONStringTools.prettyPrintJson(invalidJsonString);
+        assertEquals("Error: java.io.EOFException: End of input at line 1 column 77 path $.three", formattedJsonString);
+    }
+
+    @Test
+    public void shouldPrettyPrintJsonOutputBlank() {
+        String blankJsonString = "";
+        String formattedJsonString = JSONStringTools.prettyPrintJson(blankJsonString);
+        assertEquals("", formattedJsonString);
+    }
 }

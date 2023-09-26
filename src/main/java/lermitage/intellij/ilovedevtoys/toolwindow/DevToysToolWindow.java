@@ -156,7 +156,7 @@ public class DevToysToolWindow {
         toolPanelsByTitle.put("ASCII <> HEX converter", new PanelAndIcon(asciihexPanel, iconsPath + "AsciiHex.svg"));
         toolPanelsByTitle.put("BENCODE <> JSON converter", new PanelAndIcon(bencodejsonPanel, iconsPath + "BencodeJson.svg"));
         toolPanelsByTitle.put("JSON <> YAML converter", new PanelAndIcon(jsonyamlPanel, iconsPath + "JsonYaml.svg"));
-        toolPanelsByTitle.put("JSON to String converter", new PanelAndIcon(jsonStringPanel, iconsPath + "JsonString.svg"));
+        toolPanelsByTitle.put("JSON to String converter, pretty print", new PanelAndIcon(jsonStringPanel, iconsPath + "JsonString.svg"));
         toolPanelsByTitle.put("Properties to YAML converter ", new PanelAndIcon(propertiesYamlPanel, iconsPath + "PropertiesYaml.svg"));
 
         new Base64ToolSetup(
@@ -305,7 +305,7 @@ public class DevToysToolWindow {
                         "verifies the hash with an algorithm like MD5,<br>" +
                         "SHA1/256/384/512 or BCrypt 2A/2B/2Y.</html>");
                 }
-                case "JSON to String converter" -> {
+                case "JSON to String converter, pretty print" -> {
                     helpLabel.setVisible(true);
                     helpLabel.setToolTipText("<html>" +
                         "Type some JSON and it will be automatically<br>" +

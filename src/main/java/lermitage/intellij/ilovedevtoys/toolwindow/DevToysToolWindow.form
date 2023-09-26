@@ -1651,7 +1651,7 @@
                             <constraints/>
                             <properties>
                               <autoscrolls value="false"/>
-                              <editable value="false"/>
+                              <editable value="true"/>
                               <lineWrap value="true"/>
                             </properties>
                           </component>

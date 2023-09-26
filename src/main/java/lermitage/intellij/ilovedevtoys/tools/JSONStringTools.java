@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.lang.StringUtils;
 
 public class JSONStringTools {
 
@@ -26,6 +27,8 @@ public class JSONStringTools {
         try {
             if (jsonString.isBlank()) return "";
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            jsonString = jsonString.replaceAll("\\\\\"", "\"");
+            jsonString = StringUtils.strip(jsonString, "\"");
             Object jsonObject = gson.fromJson(jsonString, Object.class);
             return gson.toJson(jsonObject);
         } catch (Exception e) {

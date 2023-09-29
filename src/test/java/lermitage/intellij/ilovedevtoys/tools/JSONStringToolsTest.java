@@ -68,6 +68,18 @@ class JSONStringToolsTest {
         String uglyJsonString2 = "\"{\\\"one\\\":\\\"AAA\\\",\\\"two\\\":[\\\"BBB\\\",\\\"CCC\\\"],\\\"three\\\":{\\\"four\\\":\\\"DDD\\\",\\\"five\\\":[\\\"EEE\\\",\\\"FFF\\\"]}}\"";
         String formattedJsonString2 = JSONStringTools.prettyPrintJson(uglyJsonString2);
         assertEquals(expectedPrettyJson, formattedJsonString2);
+
+        String uglyJsonString3 = """
+            {'one': 'one one', 'two': 'two\\'s two\\'\\'s two', 'three': ''}
+            """;
+        String expected = """
+            {
+              "one": "one one",
+              "two": "two\\u0027s two\\u0027\\u0027s two",
+              "three": ""
+            }""";
+        String formattedJsonString3 = JSONStringTools.prettyPrintJson(uglyJsonString3);
+        assertEquals(expected, formattedJsonString3);
     }
 
     @Test
@@ -82,5 +94,28 @@ class JSONStringToolsTest {
         String blankJsonString = "";
         String formattedJsonString = JSONStringTools.prettyPrintJson(blankJsonString);
         assertEquals("", formattedJsonString);
+    }
+
+    @Test
+    public void shouldParseJsonError() {
+        String error = "Error: com.google.gson.stream.MalformedJsonException: Unterminated object at line 1 column 33 path $.two";
+        int[] result = JSONStringTools.parseError(error);
+        assert result != null;
+        assertEquals(1, result[0]);
+        assertEquals(33, result[1]);
+    }
+
+    @Test
+    public void shouldParseJsonError2() {
+        String error = "Error: com.google.gson.stream.MalformedJsonException: Unterminated object at line 1 column path $.two";
+        int[] result = JSONStringTools.parseError(error);
+        assert result == null;
+    }
+
+    @Test
+    public void shouldNotParseJsonError() {
+        String error = "some other error at line 1 column 33 path $.two";
+        int[] result = JSONStringTools.parseError(error);
+        assert result == null;
     }
 }

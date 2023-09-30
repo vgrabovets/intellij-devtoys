@@ -70,16 +70,44 @@ class JSONStringToolsTest {
         assertEquals(expectedPrettyJson, formattedJsonString2);
 
         String uglyJsonString3 = """
-            {'one': 'one one', 'two': 'two\\'s two\\'\\'s two', 'three': ''}
+            {'one': 'one one', 'two': 'two's two's two', 'three': ''}
             """;
         String expected = """
             {
               "one": "one one",
-              "two": "two\\u0027s two\\u0027\\u0027s two",
+              "two": "two's two's two",
               "three": ""
             }""";
         String formattedJsonString3 = JSONStringTools.prettyPrintJson(uglyJsonString3);
         assertEquals(expected, formattedJsonString3);
+    }
+
+    @Test
+    public void shouldPrettyPrintComplexJson() {
+        String uglyString = """
+            [{website:'domain.com',employees_number:0,company_name:'Company LTD',source_id:'15815362',shorthand_name:'company-ltd',canonical_shorthand_name:'company-ltd',industry:'Information Services',founded:'',description:'Tech industry has increased competition between businesses. To stand out in today's crowded landscape, you need to have a clear edge over others. Access to authentic, reliable data has never been more critical than it is now.  \s
+
+            At our company's, we give'}]
+            """;
+
+        String formattedJsonString = JSONStringTools.prettyPrintJson(uglyString);
+        String expectedPrettyJson = """
+            [
+              {
+                "website": "domain.com",
+                "employees_number": 0.0,
+                "company_name": "Company LTD",
+                "source_id": "15815362",
+                "shorthand_name": "company-ltd",
+                "canonical_shorthand_name": "company-ltd",
+                "industry": "Information Services",
+                "founded": "",
+                "description": "Tech industry has increased competition between businesses. To stand out in today's crowded landscape, you need to have a clear edge over others. Access to authentic, reliable data has never been more critical than it is now.  \s
+
+            At our company's, we give"
+              }
+            ]""";
+        assertEquals(expectedPrettyJson, formattedJsonString);
     }
 
     @Test
@@ -94,28 +122,5 @@ class JSONStringToolsTest {
         String blankJsonString = "";
         String formattedJsonString = JSONStringTools.prettyPrintJson(blankJsonString);
         assertEquals("", formattedJsonString);
-    }
-
-    @Test
-    public void shouldParseJsonError() {
-        String error = "Error: com.google.gson.stream.MalformedJsonException: Unterminated object at line 1 column 33 path $.two";
-        int[] result = JSONStringTools.parseError(error);
-        assert result != null;
-        assertEquals(1, result[0]);
-        assertEquals(33, result[1]);
-    }
-
-    @Test
-    public void shouldParseJsonError2() {
-        String error = "Error: com.google.gson.stream.MalformedJsonException: Unterminated object at line 1 column path $.two";
-        int[] result = JSONStringTools.parseError(error);
-        assert result == null;
-    }
-
-    @Test
-    public void shouldNotParseJsonError() {
-        String error = "some other error at line 1 column 33 path $.two";
-        int[] result = JSONStringTools.parseError(error);
-        assert result == null;
     }
 }

@@ -71,6 +71,7 @@ dependencies {
     implementation("com.nulab-inc:zxcvbn:1.8.2") // for password strength evaluation
     implementation("fr.marcwrobel:jbanking:4.1.0") // for IBAN generation
     implementation("at.favre.lib:bcrypt:0.10.2") // for Bcrypt hash
+    implementation("com.google.code.gson:gson:2.10.1") // JSON pretty print
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")

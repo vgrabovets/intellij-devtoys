@@ -68,6 +68,46 @@ class JSONStringToolsTest {
         String uglyJsonString2 = "\"{\\\"one\\\":\\\"AAA\\\",\\\"two\\\":[\\\"BBB\\\",\\\"CCC\\\"],\\\"three\\\":{\\\"four\\\":\\\"DDD\\\",\\\"five\\\":[\\\"EEE\\\",\\\"FFF\\\"]}}\"";
         String formattedJsonString2 = JSONStringTools.prettyPrintJson(uglyJsonString2);
         assertEquals(expectedPrettyJson, formattedJsonString2);
+
+        String uglyJsonString3 = """
+            {'one': 'one one', 'two': 'two's two's two', 'three': ''}
+            """;
+        String expected = """
+            {
+              "one": "one one",
+              "two": "two's two's two",
+              "three": ""
+            }""";
+        String formattedJsonString3 = JSONStringTools.prettyPrintJson(uglyJsonString3);
+        assertEquals(expected, formattedJsonString3);
+    }
+
+    @Test
+    public void shouldPrettyPrintComplexJson() {
+        String uglyString = """
+            [{website:'domain.com',employees_number:0,company_name:'Company LTD',source_id:'15815362',shorthand_name:'company-ltd',canonical_shorthand_name:'company-ltd',industry:'Information Services',founded:'',description:'Tech industry has increased competition between businesses. To stand out in today's crowded landscape, you need to have a clear edge over others. Access to authentic, reliable data has never been more critical than it is now.  \s
+
+            At our company's, we give'}]
+            """;
+
+        String formattedJsonString = JSONStringTools.prettyPrintJson(uglyString);
+        String expectedPrettyJson = """
+            [
+              {
+                "website": "domain.com",
+                "employees_number": 0.0,
+                "company_name": "Company LTD",
+                "source_id": "15815362",
+                "shorthand_name": "company-ltd",
+                "canonical_shorthand_name": "company-ltd",
+                "industry": "Information Services",
+                "founded": "",
+                "description": "Tech industry has increased competition between businesses. To stand out in today's crowded landscape, you need to have a clear edge over others. Access to authentic, reliable data has never been more critical than it is now.  \s
+
+            At our company's, we give"
+              }
+            ]""";
+        assertEquals(expectedPrettyJson, formattedJsonString);
     }
 
     @Test

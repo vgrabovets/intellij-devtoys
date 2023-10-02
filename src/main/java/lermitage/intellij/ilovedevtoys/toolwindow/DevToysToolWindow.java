@@ -116,6 +116,7 @@ public class DevToysToolWindow {
     private JPanel jsonStringPanel;
     private JTextArea jsonStringJsonArea;
     private JTextArea jsonStringStringTextArea;
+    private JButton changeOrientationButton;
 
     private JPanel propertiesYamlPanel;
     private JComboBox<String> propertiesYamlTypeComboBox;
@@ -230,7 +231,8 @@ public class DevToysToolWindow {
             uuidTextArea).setup();
         new JSONStringToolSetup(
             jsonStringJsonArea,
-            jsonStringStringTextArea).setup();
+            jsonStringStringTextArea,
+            changeOrientationButton).setup();
         new JSONYAMLToolSetup(
             jsonyamlJSONTextArea,
             jsonyamlYAMLTextArea).setup();

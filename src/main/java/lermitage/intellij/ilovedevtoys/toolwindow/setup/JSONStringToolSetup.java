@@ -2,7 +2,7 @@ package lermitage.intellij.ilovedevtoys.toolwindow.setup;
 
 import lermitage.intellij.ilovedevtoys.tools.JSONStringTools;
 
-import javax.swing.JTextArea;
+import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -10,11 +10,14 @@ public class JSONStringToolSetup extends AbstractToolSetup {
 
     private final JTextArea jsonStringJsonArea;
     private final JTextArea jsonStringStringTextArea;
+    private final JButton changeOrientationButton;
 
     public JSONStringToolSetup(JTextArea jsonStringJsonArea,
-                               JTextArea jsonStringStringTextArea) {
+                               JTextArea jsonStringStringTextArea,
+                               JButton changeOrientationButton) {
         this.jsonStringJsonArea = jsonStringJsonArea;
         this.jsonStringStringTextArea = jsonStringStringTextArea;
+        this.changeOrientationButton = changeOrientationButton;
     }
 
     public void setup() {
@@ -51,5 +54,7 @@ public class JSONStringToolSetup extends AbstractToolSetup {
                 updateWithBestNumberOfRows(jsonStringJsonArea, jsonStringStringTextArea);
             }
         });
+
+        changeOrientationButton.addActionListener(e -> jsonStringStringTextArea.setText("Button clicked!"));
     }
 }

@@ -111,6 +111,17 @@ class JSONStringToolsTest {
     }
 
     @Test
+    public void shouldPrettyPrintTextWithQuote() {
+        String uglyString = "{meta:'H&M is your shopping destination for fashion, home, beauty, kids' clothes and more.'}";
+        String formattedJsonString = JSONStringTools.prettyPrintJson(uglyString);
+        String expectedPrettyJson = """
+            {
+              "meta": "H&M is your shopping destination for fashion, home, beauty, kids' clothes and more."
+            }""";
+        assertEquals(expectedPrettyJson, formattedJsonString);
+    }
+
+    @Test
     public void shouldPrettyPrintJsonOutputError() {
         String invalidJsonString = "{\"one\":\"AAA\",\"two\":[\"BBB\",\"CCC\"],\"three\":{\"four\":\"DDD\",\"five\":[\"EEE\",\"FFF\"]}";
         String formattedJsonString = JSONStringTools.prettyPrintJson(invalidJsonString);

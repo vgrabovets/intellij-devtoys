@@ -66,10 +66,21 @@ public class JSONStringTools {
         return null;
     }
 
-    private static String fixQuotes(String jsonString, int line, int column) {
+    private static String fixQuotes(String jsonString, int line, int column) throws RuntimeException {
         String[] stringArray = jsonString.split("\n");
         String fixedLine = stringArray[line - 1];
-        fixedLine = fixedLine.substring(0, column - 3) + "\\" + fixedLine.substring(column - 3);
+        int badCharPosition = column - 2;
+        for (; badCharPosition >= 0; badCharPosition--) {
+            String character = fixedLine.substring(badCharPosition - 1, badCharPosition);
+            if (!character.isBlank()) {
+                badCharPosition--;
+                break;
+            }
+        }
+        if (badCharPosition < 0) {
+            throw new RuntimeException(String.format("Cannot fix quotes at line %d column %d", line, column));
+        }
+        fixedLine = fixedLine.substring(0, badCharPosition) + "\\" + fixedLine.substring(badCharPosition);
         stringArray[line - 1] = fixedLine;
         return String.join("\n", stringArray);
     }

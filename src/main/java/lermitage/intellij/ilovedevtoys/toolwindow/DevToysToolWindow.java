@@ -11,6 +11,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.util.LinkedHashMap;
@@ -114,8 +115,10 @@ public class DevToysToolWindow {
     private JButton explainButton;
 
     private JPanel jsonStringPanel;
+    private JSplitPane jsonStringSplitPane;
     private JTextArea jsonStringJsonArea;
     private JTextArea jsonStringStringTextArea;
+    private JButton changeOrientationButton;
 
     private JPanel propertiesYamlPanel;
     private JComboBox<String> propertiesYamlTypeComboBox;
@@ -229,8 +232,10 @@ public class DevToysToolWindow {
             uuidGenerateButton,
             uuidTextArea).setup();
         new JSONStringToolSetup(
+            jsonStringSplitPane,
             jsonStringJsonArea,
-            jsonStringStringTextArea).setup();
+            jsonStringStringTextArea,
+            changeOrientationButton).setup();
         new JSONYAMLToolSetup(
             jsonyamlJSONTextArea,
             jsonyamlYAMLTextArea).setup();

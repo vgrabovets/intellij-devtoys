@@ -8,13 +8,18 @@ import java.awt.event.KeyListener;
 
 public class JSONStringToolSetup extends AbstractToolSetup {
 
+    private final JSplitPane jsonStringSplitPane;
     private final JTextArea jsonStringJsonArea;
     private final JTextArea jsonStringStringTextArea;
     private final JButton changeOrientationButton;
 
-    public JSONStringToolSetup(JTextArea jsonStringJsonArea,
-                               JTextArea jsonStringStringTextArea,
-                               JButton changeOrientationButton) {
+    public JSONStringToolSetup(
+        JSplitPane jsonStringSplitPane,
+        JTextArea jsonStringJsonArea,
+        JTextArea jsonStringStringTextArea,
+        JButton changeOrientationButton
+    ) {
+        this.jsonStringSplitPane = jsonStringSplitPane;
         this.jsonStringJsonArea = jsonStringJsonArea;
         this.jsonStringStringTextArea = jsonStringStringTextArea;
         this.changeOrientationButton = changeOrientationButton;
@@ -55,6 +60,14 @@ public class JSONStringToolSetup extends AbstractToolSetup {
             }
         });
 
-        changeOrientationButton.addActionListener(e -> jsonStringStringTextArea.setText("Button clicked!"));
+        changeOrientationButton.addActionListener(e -> {
+            float JsonAreaPercentage = (float) jsonStringSplitPane.getDividerLocation() /
+                (jsonStringSplitPane.getMaximumDividerLocation() - jsonStringSplitPane.getMinimumDividerLocation());
+            jsonStringSplitPane.setOrientation(jsonStringSplitPane.getOrientation() ^ 1);
+            int dividerLocation = Math.round(
+                (jsonStringSplitPane.getMaximumDividerLocation() - jsonStringSplitPane.getMinimumDividerLocation()) * JsonAreaPercentage
+            );
+            jsonStringSplitPane.setDividerLocation(dividerLocation);
+        });
     }
 }

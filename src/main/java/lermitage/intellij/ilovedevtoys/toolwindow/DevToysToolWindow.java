@@ -11,6 +11,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.util.LinkedHashMap;
@@ -114,6 +115,7 @@ public class DevToysToolWindow {
     private JButton explainButton;
 
     private JPanel jsonStringPanel;
+    private JSplitPane jsonStringSplitPane;
     private JTextArea jsonStringJsonArea;
     private JTextArea jsonStringStringTextArea;
     private JButton changeOrientationButton;
@@ -230,6 +232,7 @@ public class DevToysToolWindow {
             uuidGenerateButton,
             uuidTextArea).setup();
         new JSONStringToolSetup(
+            jsonStringSplitPane,
             jsonStringJsonArea,
             jsonStringStringTextArea,
             changeOrientationButton).setup();

@@ -280,7 +280,8 @@ public class DevToysToolWindow {
         helpLabel.setVisible(false);
 
         toolComboBox.addActionListener(e -> {
-            ComboBoxWithImageItem item = toolComboBox.getItemAt(toolComboBox.getSelectedIndex());
+            int selectedIndex = toolComboBox.getSelectedIndex();
+            ComboBoxWithImageItem item = toolComboBox.getItemAt(selectedIndex);
             displayToolPanel(item.title());
 
             helpLabel.setVisible(false);
@@ -339,6 +340,9 @@ public class DevToysToolWindow {
                     linesUtilsToolSetup.activate();
                 }
             }
+            toolComboBox.removeItemAt(selectedIndex);
+            toolComboBox.insertItemAt(item, 0);
+            toolComboBox.setSelectedIndex(0);
         });
         toolComboBox.setSelectedIndex(0);
     }

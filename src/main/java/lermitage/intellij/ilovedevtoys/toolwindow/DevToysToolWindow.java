@@ -3,6 +3,7 @@ package lermitage.intellij.ilovedevtoys.toolwindow;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBTextField;
+import lermitage.intellij.ilovedevtoys.toolwindow.options.DevToysToolWindowOptions;
 import lermitage.intellij.ilovedevtoys.toolwindow.setup.*;
 
 import javax.swing.JButton;
@@ -142,6 +143,7 @@ public class DevToysToolWindow {
     }
 
     public DevToysToolWindow() {
+        DevToysToolWindowOptions settings = DevToysToolWindowOptions.getInstance();
         String iconsPath = "ilovedevtoys/toolicons/";
         toolPanelsByTitle.put("Base64 encoder/decoder", new PanelAndIcon(base64Panel, iconsPath + "Base64EncoderDecoder.svg"));
         toolPanelsByTitle.put("URL encoder/decoder", new PanelAndIcon(urlCodecPanel, iconsPath + "UrlEncoderDecoder.svg"));
@@ -270,7 +272,12 @@ public class DevToysToolWindow {
             hmacInputTextArea,
             hmacResultTextField).setup();
 
-        toolPanelsByTitle.forEach((title, panelAndIcon) -> toolComboBox.addItem(new ComboBoxWithImageItem(title, panelAndIcon.icon)));
+        if (settings.ITEMS_ORDER.isEmpty()) {
+            toolPanelsByTitle.forEach((title, panelAndIcon) -> toolComboBox.addItem(new ComboBoxWithImageItem(title, panelAndIcon.icon)));
+        } else {
+            applyItemsOrder(settings, toolPanelsByTitle, toolComboBox);
+        }
+
         toolComboBox.setRenderer(new ComboBoxWithImageRenderer());
         toolComboBox.setMaximumRowCount(11);
 
@@ -343,8 +350,30 @@ public class DevToysToolWindow {
             toolComboBox.removeItemAt(selectedIndex);
             toolComboBox.insertItemAt(item, 0);
             toolComboBox.setSelectedIndex(0);
+
+            if (!item.title().equals(settings.ITEMS_ORDER.get(0))) {
+                settings.saveItemsOrder(toolComboBox);
+            }
         });
         toolComboBox.setSelectedIndex(0);
+    }
+
+    private void applyItemsOrder(
+        DevToysToolWindowOptions settings,
+        LinkedHashMap<String, PanelAndIcon> toolPanelsByTitle,
+        JComboBox<ComboBoxWithImageItem> toolComboBox) {
+        for (String title : settings.ITEMS_ORDER) {
+            PanelAndIcon panelAndIconRecord = toolPanelsByTitle.get(title);
+            if (panelAndIconRecord != null) {
+                toolComboBox.addItem(new ComboBoxWithImageItem(title, panelAndIconRecord.icon));
+            }
+        }
+
+        toolPanelsByTitle.forEach((title, panelAndIcon) -> {
+            if (!settings.ITEMS_ORDER.contains(title)) {
+                toolComboBox.addItem(new ComboBoxWithImageItem(title, panelAndIcon.icon));
+            }
+        });
     }
 
     private void displayToolPanel(String toolPanelTitle) {

@@ -1,6 +1,7 @@
 package lermitage.intellij.ilovedevtoys.toolwindow.setup;
 
 import lermitage.intellij.ilovedevtoys.tools.JSONStringTools;
+import lermitage.intellij.ilovedevtoys.toolwindow.options.JSONStringToolOptions;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -26,6 +27,10 @@ public class JSONStringToolSetup extends AbstractToolSetup {
     }
 
     public void setup() {
+        JSONStringToolOptions settings = JSONStringToolOptions.getInstance();
+        jsonStringSplitPane.setOrientation(settings.DIVIDER_ORIENTATION);
+        jsonStringSplitPane.setDividerLocation(settings.DIVIDER_LOCATION);
+
         jsonStringJsonArea.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -60,10 +65,16 @@ public class JSONStringToolSetup extends AbstractToolSetup {
             }
         });
 
+        jsonStringSplitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY , evt -> {
+            settings.DIVIDER_LOCATION = (int) evt.getNewValue();
+        });
+
         changeOrientationButton.addActionListener(e -> {
             float JsonAreaPercentage = (float) jsonStringSplitPane.getDividerLocation() /
                 (jsonStringSplitPane.getMaximumDividerLocation() - jsonStringSplitPane.getMinimumDividerLocation());
-            jsonStringSplitPane.setOrientation(jsonStringSplitPane.getOrientation() ^ 1);
+            int dividerOrientation = jsonStringSplitPane.getOrientation() ^ 1;
+            jsonStringSplitPane.setOrientation(dividerOrientation);
+            settings.DIVIDER_ORIENTATION = dividerOrientation;
             int dividerLocation = Math.round(
                 (jsonStringSplitPane.getMaximumDividerLocation() - jsonStringSplitPane.getMinimumDividerLocation()) * JsonAreaPercentage
             );

@@ -5,6 +5,7 @@ import lermitage.intellij.ilovedevtoys.tools.TimestampTools;
 import lermitage.intellij.ilovedevtoys.toolwindow.ComboBoxWithImageItem;
 import lermitage.intellij.ilovedevtoys.toolwindow.ComboBoxWithImageRenderer;
 import lermitage.intellij.ilovedevtoys.toolwindow.DevToysToolWindow;
+import lermitage.intellij.ilovedevtoys.toolwindow.settings.TimestampToolSettings;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -77,6 +78,7 @@ public class TimestampToolSetup extends AbstractToolSetup {
     }
 
     public void setup() {
+        TimestampToolSettings settings = TimestampToolSettings.getInstance();
         timestampTimezoneComboBox.setRenderer(new ComboBoxWithImageRenderer());
 
         // populate the ZoneId selector
@@ -95,7 +97,7 @@ public class TimestampToolSetup extends AbstractToolSetup {
         // select default ZoneId in selector
         for (int i = 0; i < timestampTimezoneComboBox.getItemCount(); i++) {
             ComboBoxWithImageItem comboBoxWithImageItem = timestampTimezoneComboBox.getItemAt(i);
-            if (comboBoxWithImageItem.title().equalsIgnoreCase(ZoneId.systemDefault().toString())) {
+            if (comboBoxWithImageItem.title().equalsIgnoreCase(settings.TIMEZONE)) {
                 timestampTimezoneComboBox.setSelectedIndex(i);
                 break;
             }
@@ -163,6 +165,15 @@ public class TimestampToolSetup extends AbstractToolSetup {
         timestampMinuteSpinner.addChangeListener(e -> updateTimestampToolOnTimestampFieldsUpdate());
         timestampSecondSpinner.addChangeListener(e -> updateTimestampToolOnTimestampFieldsUpdate());
         timestampMillisecondSpinner.addChangeListener(e -> updateTimestampToolOnTimestampFieldsUpdate());*/
+
+        timestampTimezoneComboBox.addActionListener(e -> {
+            ComboBoxWithImageItem selectedItem = timestampTimezoneComboBox.getItemAt(
+                timestampTimezoneComboBox.getSelectedIndex()
+            );
+            if (selectedItem != null && !selectedItem.title().equals(settings.TIMEZONE)) {
+                settings.TIMEZONE = selectedItem.title();
+            }
+        });
 
         timestampFilterTextField.addKeyListener(new KeyListener() {
             @Override

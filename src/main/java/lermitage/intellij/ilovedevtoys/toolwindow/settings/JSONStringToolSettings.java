@@ -1,4 +1,4 @@
-package lermitage.intellij.ilovedevtoys.toolwindow.options;
+package lermitage.intellij.ilovedevtoys.toolwindow.settings;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
@@ -15,21 +15,21 @@ import javax.swing.JSplitPane;
     storages = @Storage("dev_toys.xml"),
     category = SettingsCategory.PLUGINS
 )
-public final class JSONStringToolOptions implements PersistentStateComponent<JSONStringToolOptions> {
+public final class JSONStringToolSettings implements PersistentStateComponent<JSONStringToolSettings> {
     public int DIVIDER_LOCATION = 100;
     public int DIVIDER_ORIENTATION = JSplitPane.VERTICAL_SPLIT;
 
     @Override
-    public JSONStringToolOptions getState() {
+    public JSONStringToolSettings getState() {
         return this;
     }
 
     @Override
-    public void loadState(@NotNull JSONStringToolOptions state) {
+    public void loadState(@NotNull JSONStringToolSettings state) {
         XmlSerializerUtil.copyBean(state, this);
     }
 
-    public static JSONStringToolOptions getInstance() {
-        return ApplicationManager.getApplication().getService(JSONStringToolOptions.class);
+    public static JSONStringToolSettings getInstance() {
+        return ApplicationManager.getApplication().getService(JSONStringToolSettings.class);
     }
 }

@@ -1,7 +1,7 @@
 package lermitage.intellij.ilovedevtoys.toolwindow.setup;
 
 import lermitage.intellij.ilovedevtoys.tools.JSONStringTools;
-import lermitage.intellij.ilovedevtoys.toolwindow.options.JSONStringToolOptions;
+import lermitage.intellij.ilovedevtoys.toolwindow.settings.JSONStringToolSettings;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -27,7 +27,7 @@ public class JSONStringToolSetup extends AbstractToolSetup {
     }
 
     public void setup() {
-        JSONStringToolOptions settings = JSONStringToolOptions.getInstance();
+        JSONStringToolSettings settings = JSONStringToolSettings.getInstance();
         jsonStringSplitPane.setOrientation(settings.DIVIDER_ORIENTATION);
         jsonStringSplitPane.setDividerLocation(settings.DIVIDER_LOCATION);
 

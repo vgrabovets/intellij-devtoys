@@ -1,4 +1,4 @@
-package lermitage.intellij.ilovedevtoys.toolwindow.options;
+package lermitage.intellij.ilovedevtoys.toolwindow.settings;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
@@ -17,21 +17,21 @@ import java.util.ArrayList;
     storages = @Storage("dev_toys.xml"),
     category = SettingsCategory.PLUGINS
 )
-public final class DevToysToolWindowOptions implements PersistentStateComponent<DevToysToolWindowOptions> {
+public final class DevToysToolWindowSettings implements PersistentStateComponent<DevToysToolWindowSettings> {
     public ArrayList<String> ITEMS_ORDER = new ArrayList<>();
 
     @Override
-    public DevToysToolWindowOptions getState() {
+    public DevToysToolWindowSettings getState() {
         return this;
     }
 
     @Override
-    public void loadState(@NotNull DevToysToolWindowOptions state) {
+    public void loadState(@NotNull DevToysToolWindowSettings state) {
         XmlSerializerUtil.copyBean(state, this);
     }
 
-    public static DevToysToolWindowOptions getInstance() {
-        return ApplicationManager.getApplication().getService(DevToysToolWindowOptions.class);
+    public static DevToysToolWindowSettings getInstance() {
+        return ApplicationManager.getApplication().getService(DevToysToolWindowSettings.class);
     }
 
     public void saveItemsOrder(JComboBox<ComboBoxWithImageItem> toolComboBox) {

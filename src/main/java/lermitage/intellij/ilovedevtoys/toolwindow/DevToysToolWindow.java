@@ -3,7 +3,7 @@ package lermitage.intellij.ilovedevtoys.toolwindow;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBTextField;
-import lermitage.intellij.ilovedevtoys.toolwindow.options.DevToysToolWindowOptions;
+import lermitage.intellij.ilovedevtoys.toolwindow.settings.DevToysToolWindowSettings;
 import lermitage.intellij.ilovedevtoys.toolwindow.setup.*;
 
 import javax.swing.JButton;
@@ -143,7 +143,7 @@ public class DevToysToolWindow {
     }
 
     public DevToysToolWindow() {
-        DevToysToolWindowOptions settings = DevToysToolWindowOptions.getInstance();
+        DevToysToolWindowSettings settings = DevToysToolWindowSettings.getInstance();
         String iconsPath = "ilovedevtoys/toolicons/";
         toolPanelsByTitle.put("Base64 encoder/decoder", new PanelAndIcon(base64Panel, iconsPath + "Base64EncoderDecoder.svg"));
         toolPanelsByTitle.put("URL encoder/decoder", new PanelAndIcon(urlCodecPanel, iconsPath + "UrlEncoderDecoder.svg"));
@@ -359,7 +359,7 @@ public class DevToysToolWindow {
     }
 
     private void applyItemsOrder(
-        DevToysToolWindowOptions settings,
+        DevToysToolWindowSettings settings,
         LinkedHashMap<String, PanelAndIcon> toolPanelsByTitle,
         JComboBox<ComboBoxWithImageItem> toolComboBox) {
         for (String title : settings.ITEMS_ORDER) {

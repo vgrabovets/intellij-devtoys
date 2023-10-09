@@ -15,7 +15,9 @@ import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 public class DevToysToolWindow {
 
@@ -131,7 +133,7 @@ public class DevToysToolWindow {
     private JTextField hmacKeyTextField;
     private JTextArea hmacInputTextArea;
     private JTextField hmacResultTextField;
-    private JPanel     passwordVerifierPanel;
+    private JPanel passwordVerifierPanel;
     private JTextField passwordVerifierInputPassword;
     private JTextField passwordVerifierHashTextField;
     private JBTextField passwordVerifierResultLabel;
@@ -164,6 +166,8 @@ public class DevToysToolWindow {
         toolPanelsByTitle.put("JSON <> String converter", new PanelAndIcon(jsonStringPanel, iconsPath + "JsonString.svg"));
         toolPanelsByTitle.put("Properties to YAML converter ", new PanelAndIcon(propertiesYamlPanel, iconsPath + "PropertiesYaml.svg"));
 
+        Set<String> initializedTools = new HashSet<>();
+
         new Base64ToolSetup(
             base64RadioButtonUTF8,
             base64RadioButtonASCII,
@@ -177,24 +181,6 @@ public class DevToysToolWindow {
             dataFakerGenerateButton,
             dataFakerLocaleComboBox,
             dataFakerTextArea).setup();
-        new TimestampToolSetup(
-            timestampTimezoneComboBox,
-            timestampTextArea,
-            timestampSpinner,
-            timestampNowButton,
-            timestampUpdateFromTimestampButton,
-            timestampFilterTextField,
-            timestampUpdateFromFieldsButton,
-            timestampWarningNoZoneIdLabel,
-            timestampYearSpinner,
-            timestampDaySpinner,
-            timestampMonthSpinner,
-            timestampHourSpinner,
-            timestampMinuteSpinner,
-            timestampSecondSpinner,
-            timestampMillisecondSpinner,
-            timestampResolutionComboBox,
-            timestampMillisecondLabel).setup();
         new CronToolSetup(
             cronExpressionTextField,
             cronExpressionHowManyDaysSpinner,
@@ -233,11 +219,6 @@ public class DevToysToolWindow {
         new UUIDToolSetup(
             uuidGenerateButton,
             uuidTextArea).setup();
-        new JSONStringToolSetup(
-            jsonStringSplitPane,
-            jsonStringJsonArea,
-            jsonStringStringTextArea,
-            changeOrientationButton).setup();
         new JSONYAMLToolSetup(
             jsonyamlJSONTextArea,
             jsonyamlYAMLTextArea).setup();
@@ -323,6 +304,15 @@ public class DevToysToolWindow {
                     helpLabel.setToolTipText("<html>" +
                         "Type some JSON and it will be automatically<br>" +
                         "converted to String as you type.</html>");
+
+                    if (!initializedTools.contains(item.title())) {
+                        new JSONStringToolSetup(
+                            jsonStringSplitPane,
+                            jsonStringJsonArea,
+                            jsonStringStringTextArea,
+                            changeOrientationButton).setup();
+                        initializedTools.add(item.title());
+                    }
                 }
                 case "JSON <> YAML converter" -> {
                     helpLabel.setVisible(true);
@@ -342,6 +332,28 @@ public class DevToysToolWindow {
                         "Type a timestamp or update datetime field(s)<br>" +
                         "then hit the <i>Update from timestamp</i> or<br>" +
                         "<i>Update from fields</i> button.</html>");
+
+                    if (!initializedTools.contains(item.title())) {
+                        new TimestampToolSetup(
+                            timestampTimezoneComboBox,
+                            timestampTextArea,
+                            timestampSpinner,
+                            timestampNowButton,
+                            timestampUpdateFromTimestampButton,
+                            timestampFilterTextField,
+                            timestampUpdateFromFieldsButton,
+                            timestampWarningNoZoneIdLabel,
+                            timestampYearSpinner,
+                            timestampDaySpinner,
+                            timestampMonthSpinner,
+                            timestampHourSpinner,
+                            timestampMinuteSpinner,
+                            timestampSecondSpinner,
+                            timestampMillisecondSpinner,
+                            timestampResolutionComboBox,
+                            timestampMillisecondLabel).setup();
+                        initializedTools.add(item.title());
+                    }
                 }
                 case "Lines utils" -> {
                     linesUtilsToolSetup.activate();

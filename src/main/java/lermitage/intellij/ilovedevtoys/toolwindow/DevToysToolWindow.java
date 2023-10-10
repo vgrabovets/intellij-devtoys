@@ -168,14 +168,6 @@ public class DevToysToolWindow {
 
         Set<String> initializedTools = new HashSet<>();
 
-        new Base64ToolSetup(
-            base64RadioButtonUTF8,
-            base64RadioButtonASCII,
-            base64RawTextArea,
-            base64Base64TextArea).setup();
-        new URLCodecToolSetup(
-            urlCodecDecodedTextField,
-            urlCodecEncodedTextField).setup();
         new DataFakerToolSetup(
             dataFakerGeneratorComboBox,
             dataFakerGenerateButton,
@@ -187,16 +179,6 @@ public class DevToysToolWindow {
             cronTypeComboBox,
             cronTextArea,
             explainButton).setup();
-        LinesUtilsToolSetup linesUtilsToolSetup = new LinesUtilsToolSetup(
-            helpLabel,
-            linesUtilsComboBox,
-            linesUtilsCompareButton,
-            linesUtilsCaseSensitiveCheckBox,
-            linesUtilsTextArea1,
-            linesUtilsTextArea2,
-            linesUtilsResultTextArea,
-            linesUtilsIgnoreEmptyLinesCheckBox);
-        linesUtilsToolSetup.setup();
         new LoremIpsumToolSetup(
             loremIpsumGenerateButton,
             loremIpsumTextArea).setup();
@@ -219,12 +201,6 @@ public class DevToysToolWindow {
         new UUIDToolSetup(
             uuidGenerateButton,
             uuidTextArea).setup();
-        new JSONYAMLToolSetup(
-            jsonyamlJSONTextArea,
-            jsonyamlYAMLTextArea).setup();
-        new BENCODEJSONToolSetup(
-            bencodejsonBENCODETextArea,
-            bencodejsonJSONTextArea).setup();
         new PropertiesYamlToolSetup(
             propertiesYamlTypeComboBox,
             propertiesYamlPropertiesTextArea,
@@ -279,12 +255,28 @@ public class DevToysToolWindow {
                     helpLabel.setToolTipText("<html>" +
                         "Type some text or Base64 and it will be<br>" +
                         "automatically converted as you type.</html>");
+
+                    if (!initializedTools.contains(item.title())) {
+                        new Base64ToolSetup(
+                            base64RadioButtonUTF8,
+                            base64RadioButtonASCII,
+                            base64RawTextArea,
+                            base64Base64TextArea).setup();
+                        initializedTools.add(item.title());
+                    }
                 }
                 case "URL encoder/decoder" -> {
                     helpLabel.setVisible(true);
                     helpLabel.setToolTipText("<html>" +
                         "Type decoded or encoded URL and it will be<br>" +
                         "automatically converted as you type.</html>");
+
+                    if (!initializedTools.contains(item.title())) {
+                        new URLCodecToolSetup(
+                            urlCodecDecodedTextField,
+                            urlCodecEncodedTextField).setup();
+                        initializedTools.add(item.title());
+                    }
                 }
                 case "Hash generator" -> {
                     helpLabel.setVisible(true);
@@ -319,12 +311,26 @@ public class DevToysToolWindow {
                     helpLabel.setToolTipText("<html>" +
                         "Type some JSON or YAML and it will be<br>" +
                         "automatically converted as you type.</html>");
+
+                    if (!initializedTools.contains(item.title())) {
+                        new JSONYAMLToolSetup(
+                            jsonyamlJSONTextArea,
+                            jsonyamlYAMLTextArea).setup();
+                        initializedTools.add(item.title());
+                    }
                 }
                 case "BENCODE <> JSON converter" -> {
                     helpLabel.setVisible(true);
                     helpLabel.setToolTipText("<html>" +
                         "Type some BENCODE or JSON and it will be<br>" +
                         "automatically converted as you type.</html>");
+
+                    if (!initializedTools.contains(item.title())) {
+                        new BENCODEJSONToolSetup(
+                            bencodejsonBENCODETextArea,
+                            bencodejsonJSONTextArea).setup();
+                        initializedTools.add(item.title());
+                    }
                 }
                 case "Timestamp converter" -> {
                     helpLabel.setVisible(true);
@@ -356,7 +362,22 @@ public class DevToysToolWindow {
                     }
                 }
                 case "Lines utils" -> {
-                    linesUtilsToolSetup.activate();
+                    LinesUtilsToolSetup linesUtilsToolSetup = null;
+
+                    if (!initializedTools.contains(item.title())) {
+                        linesUtilsToolSetup = new LinesUtilsToolSetup(
+                            helpLabel,
+                            linesUtilsComboBox,
+                            linesUtilsCompareButton,
+                            linesUtilsCaseSensitiveCheckBox,
+                            linesUtilsTextArea1,
+                            linesUtilsTextArea2,
+                            linesUtilsResultTextArea,
+                            linesUtilsIgnoreEmptyLinesCheckBox);
+                        linesUtilsToolSetup.setup();
+                        initializedTools.add(item.title());
+                    }
+                    if (linesUtilsToolSetup != null) linesUtilsToolSetup.activate();
                 }
             }
             toolComboBox.removeItemAt(selectedIndex);

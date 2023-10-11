@@ -168,20 +168,6 @@ public class DevToysToolWindow {
 
         Set<String> initializedTools = new HashSet<>();
 
-        new DataFakerToolSetup(
-            dataFakerGeneratorComboBox,
-            dataFakerGenerateButton,
-            dataFakerLocaleComboBox,
-            dataFakerTextArea).setup();
-        new CronToolSetup(
-            cronExpressionTextField,
-            cronExpressionHowManyDaysSpinner,
-            cronTypeComboBox,
-            cronTextArea,
-            explainButton).setup();
-        new LoremIpsumToolSetup(
-            loremIpsumGenerateButton,
-            loremIpsumTextArea).setup();
         var hashToolSetup = new HashToolSetup(
             hashInputTextArea,
             hashMD5TextField,
@@ -193,14 +179,7 @@ public class DevToysToolWindow {
             hashBCrypt2BTextField,
             hashBCrypt2YTextField);
         hashToolSetup.setup();
-        new PasswordVerifierToolSetup(
-            passwordVerifierHashTextField,
-            passwordVerifierInputPassword,
-            passwordVerifierResultLabel
-        ).setup();
-        new UUIDToolSetup(
-            uuidGenerateButton,
-            uuidTextArea).setup();
+
         new PropertiesYamlToolSetup(
             propertiesYamlTypeComboBox,
             propertiesYamlPropertiesTextArea,
@@ -242,6 +221,10 @@ public class DevToysToolWindow {
         helpLabel.setIcon(IconLoader.getIcon(iconsPath + "contextHelp.svg", DevToysToolWindow.class));
         helpLabel.setToolTipText("");
         helpLabel.setVisible(false);
+
+        var ref = new Object() {
+            LinesUtilsToolSetup linesUtilsToolSetup = null;
+        };
 
         toolComboBox.addActionListener(e -> {
             int selectedIndex = toolComboBox.getSelectedIndex();
@@ -290,6 +273,15 @@ public class DevToysToolWindow {
                         "and the tool will say if the password<br>" +
                         "verifies the hash with an algorithm like MD5,<br>" +
                         "SHA1/256/384/512 or BCrypt 2A/2B/2Y.</html>");
+
+                    if (!initializedTools.contains(item.title())) {
+                        new PasswordVerifierToolSetup(
+                            passwordVerifierHashTextField,
+                            passwordVerifierInputPassword,
+                            passwordVerifierResultLabel
+                        ).setup();
+                        initializedTools.add(item.title());
+                    }
                 }
                 case "JSON <> String converter" -> {
                     helpLabel.setVisible(true);
@@ -362,10 +354,8 @@ public class DevToysToolWindow {
                     }
                 }
                 case "Lines utils" -> {
-                    LinesUtilsToolSetup linesUtilsToolSetup = null;
-
                     if (!initializedTools.contains(item.title())) {
-                        linesUtilsToolSetup = new LinesUtilsToolSetup(
+                        ref.linesUtilsToolSetup = new LinesUtilsToolSetup(
                             helpLabel,
                             linesUtilsComboBox,
                             linesUtilsCompareButton,
@@ -374,10 +364,47 @@ public class DevToysToolWindow {
                             linesUtilsTextArea2,
                             linesUtilsResultTextArea,
                             linesUtilsIgnoreEmptyLinesCheckBox);
-                        linesUtilsToolSetup.setup();
+                        ref.linesUtilsToolSetup.setup();
                         initializedTools.add(item.title());
                     }
-                    if (linesUtilsToolSetup != null) linesUtilsToolSetup.activate();
+                    if (ref.linesUtilsToolSetup != null) ref.linesUtilsToolSetup.activate();
+                }
+                case "Fake Data generator" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        new DataFakerToolSetup(
+                            dataFakerGeneratorComboBox,
+                            dataFakerGenerateButton,
+                            dataFakerLocaleComboBox,
+                            dataFakerTextArea).setup();
+                        initializedTools.add(item.title());
+                    }
+                }
+                case "Cron parser" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        new CronToolSetup(
+                            cronExpressionTextField,
+                            cronExpressionHowManyDaysSpinner,
+                            cronTypeComboBox,
+                            cronTextArea,
+                            explainButton).setup();
+                        initializedTools.add(item.title());
+                    }
+                }
+                case "Lorem Ipsum generator" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        new LoremIpsumToolSetup(
+                            loremIpsumGenerateButton,
+                            loremIpsumTextArea).setup();
+                        initializedTools.add(item.title());
+                    }
+                }
+                case "UUID generator" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        new UUIDToolSetup(
+                            uuidGenerateButton,
+                            uuidTextArea).setup();
+                        initializedTools.add(item.title());
+                    }
                 }
             }
             toolComboBox.removeItemAt(selectedIndex);

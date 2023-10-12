@@ -411,7 +411,7 @@ public class DevToysToolWindow {
             toolComboBox.insertItemAt(item, 0);
             toolComboBox.setSelectedIndex(0);
 
-            if (!item.title().equals(settings.ITEMS_ORDER.get(0))) {
+            if (settings.ITEMS_ORDER.isEmpty() || !item.title().equals(settings.ITEMS_ORDER.get(0))) {
                 settings.saveItemsOrder(toolComboBox);
             }
         });

@@ -168,29 +168,6 @@ public class DevToysToolWindow {
 
         Set<String> initializedTools = new HashSet<>();
 
-        var hashToolSetup = new HashToolSetup(
-            hashInputTextArea,
-            hashMD5TextField,
-            hashSHA1TextField,
-            hashSHA256TextField,
-            hashSHA384TextField,
-            hashSHA512TextField,
-            hashBCrypt2ATextField,
-            hashBCrypt2BTextField,
-            hashBCrypt2YTextField);
-        hashToolSetup.setup();
-
-        new PasswordStrengthToolSetup(
-            passwordStrengthPasswordTextField,
-            passwordStrengthReportTextArea,
-            hashItButton,
-            hashInputTextArea,
-            e -> {
-                hashInputTextArea.setText(passwordStrengthPasswordTextField.getText());
-                selectToolByName("Hash generator");
-                hashToolSetup.update();
-            }).setup();
-
         if (settings.ITEMS_ORDER.isEmpty()) {
             toolPanelsByTitle.forEach((title, panelAndIcon) -> toolComboBox.addItem(new ComboBoxWithImageItem(title, panelAndIcon.icon)));
         } else {
@@ -207,6 +184,7 @@ public class DevToysToolWindow {
 
         var ref = new Object() {
             LinesUtilsToolSetup linesUtilsToolSetup = null;
+            HashToolSetup hashToolSetup = null;
         };
 
         toolComboBox.addActionListener(e -> {
@@ -249,6 +227,11 @@ public class DevToysToolWindow {
                     helpLabel.setToolTipText("<html>" +
                         "Type text and various hash values will<br>" +
                         "be automatically computed as you type.</html>");
+
+                    if (!initializedTools.contains(item.title())) {
+                        ref.hashToolSetup = getHashToolSetup();
+                        initializedTools.add(item.title());
+                    }
                 }
                 case "Password hash verifier" -> {
                     helpLabel.setVisible(true);
@@ -426,6 +409,23 @@ public class DevToysToolWindow {
                         initializedTools.add(item.title());
                     }
                 }
+                case "Password strength evaluator" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        if(ref.hashToolSetup == null) ref.hashToolSetup = getHashToolSetup();
+
+                        new PasswordStrengthToolSetup(
+                            passwordStrengthPasswordTextField,
+                            passwordStrengthReportTextArea,
+                            hashItButton,
+                            hashInputTextArea,
+                            event -> {
+                                hashInputTextArea.setText(passwordStrengthPasswordTextField.getText());
+                                selectToolByName("Hash generator");
+                                ref.hashToolSetup.update();
+                            }).setup();
+                        initializedTools.add(item.title());
+                    }
+                }
             }
             toolComboBox.removeItemAt(selectedIndex);
             toolComboBox.insertItemAt(item, 0);
@@ -473,4 +473,19 @@ public class DevToysToolWindow {
     public JPanel getContent() {
         return mainPanel;
     }
+
+    private HashToolSetup getHashToolSetup() {
+        HashToolSetup hashToolSetup = new HashToolSetup(
+            hashInputTextArea,
+            hashMD5TextField,
+            hashSHA1TextField,
+            hashSHA256TextField,
+            hashSHA384TextField,
+            hashSHA512TextField,
+            hashBCrypt2ATextField,
+            hashBCrypt2BTextField,
+            hashBCrypt2YTextField);
+        hashToolSetup.setup();
+        return hashToolSetup;
+    };
 }

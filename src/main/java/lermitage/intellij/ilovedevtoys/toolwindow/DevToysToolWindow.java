@@ -15,7 +15,9 @@ import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 public class DevToysToolWindow {
 
@@ -131,7 +133,7 @@ public class DevToysToolWindow {
     private JTextField hmacKeyTextField;
     private JTextArea hmacInputTextArea;
     private JTextField hmacResultTextField;
-    private JPanel     passwordVerifierPanel;
+    private JPanel passwordVerifierPanel;
     private JTextField passwordVerifierInputPassword;
     private JTextField passwordVerifierHashTextField;
     private JBTextField passwordVerifierResultLabel;
@@ -162,115 +164,9 @@ public class DevToysToolWindow {
         toolPanelsByTitle.put("BENCODE <> JSON converter", new PanelAndIcon(bencodejsonPanel, iconsPath + "BencodeJson.svg"));
         toolPanelsByTitle.put("JSON <> YAML converter", new PanelAndIcon(jsonyamlPanel, iconsPath + "JsonYaml.svg"));
         toolPanelsByTitle.put("JSON <> String converter", new PanelAndIcon(jsonStringPanel, iconsPath + "JsonString.svg"));
-        toolPanelsByTitle.put("Properties to YAML converter ", new PanelAndIcon(propertiesYamlPanel, iconsPath + "PropertiesYaml.svg"));
+        toolPanelsByTitle.put("Properties to YAML converter", new PanelAndIcon(propertiesYamlPanel, iconsPath + "PropertiesYaml.svg"));
 
-        new Base64ToolSetup(
-            base64RadioButtonUTF8,
-            base64RadioButtonASCII,
-            base64RawTextArea,
-            base64Base64TextArea).setup();
-        new URLCodecToolSetup(
-            urlCodecDecodedTextField,
-            urlCodecEncodedTextField).setup();
-        new DataFakerToolSetup(
-            dataFakerGeneratorComboBox,
-            dataFakerGenerateButton,
-            dataFakerLocaleComboBox,
-            dataFakerTextArea).setup();
-        new TimestampToolSetup(
-            timestampTimezoneComboBox,
-            timestampTextArea,
-            timestampSpinner,
-            timestampNowButton,
-            timestampUpdateFromTimestampButton,
-            timestampFilterTextField,
-            timestampUpdateFromFieldsButton,
-            timestampWarningNoZoneIdLabel,
-            timestampYearSpinner,
-            timestampDaySpinner,
-            timestampMonthSpinner,
-            timestampHourSpinner,
-            timestampMinuteSpinner,
-            timestampSecondSpinner,
-            timestampMillisecondSpinner,
-            timestampResolutionComboBox,
-            timestampMillisecondLabel).setup();
-        new CronToolSetup(
-            cronExpressionTextField,
-            cronExpressionHowManyDaysSpinner,
-            cronTypeComboBox,
-            cronTextArea,
-            explainButton).setup();
-        LinesUtilsToolSetup linesUtilsToolSetup = new LinesUtilsToolSetup(
-            helpLabel,
-            linesUtilsComboBox,
-            linesUtilsCompareButton,
-            linesUtilsCaseSensitiveCheckBox,
-            linesUtilsTextArea1,
-            linesUtilsTextArea2,
-            linesUtilsResultTextArea,
-            linesUtilsIgnoreEmptyLinesCheckBox);
-        linesUtilsToolSetup.setup();
-        new LoremIpsumToolSetup(
-            loremIpsumGenerateButton,
-            loremIpsumTextArea).setup();
-        var hashToolSetup = new HashToolSetup(
-            hashInputTextArea,
-            hashMD5TextField,
-            hashSHA1TextField,
-            hashSHA256TextField,
-            hashSHA384TextField,
-            hashSHA512TextField,
-            hashBCrypt2ATextField,
-            hashBCrypt2BTextField,
-            hashBCrypt2YTextField);
-        hashToolSetup.setup();
-        new PasswordVerifierToolSetup(
-            passwordVerifierHashTextField,
-            passwordVerifierInputPassword,
-            passwordVerifierResultLabel
-        ).setup();
-        new UUIDToolSetup(
-            uuidGenerateButton,
-            uuidTextArea).setup();
-        new JSONStringToolSetup(
-            jsonStringSplitPane,
-            jsonStringJsonArea,
-            jsonStringStringTextArea,
-            changeOrientationButton).setup();
-        new JSONYAMLToolSetup(
-            jsonyamlJSONTextArea,
-            jsonyamlYAMLTextArea).setup();
-        new BENCODEJSONToolSetup(
-            bencodejsonBENCODETextArea,
-            bencodejsonJSONTextArea).setup();
-        new PropertiesYamlToolSetup(
-            propertiesYamlTypeComboBox,
-            propertiesYamlPropertiesTextArea,
-            propertiesYamlYamlTextArea).setup();
-        new ASCIIHEXToolSetup(
-            asciihexASCIITextArea,
-            asciihexHEXTextArea,
-            asciihexSpacesCheckBox).setup();
-        new EscapeToolSetup(
-            escapeComboBox,
-            unescapedTextArea,
-            escapedTextArea).setup();
-        new PasswordStrengthToolSetup(
-            passwordStrengthPasswordTextField,
-            passwordStrengthReportTextArea,
-            hashItButton,
-            hashInputTextArea,
-            e -> {
-                hashInputTextArea.setText(passwordStrengthPasswordTextField.getText());
-                selectToolByName("Hash generator");
-                hashToolSetup.update();
-            }).setup();
-        new HMACToolSetup(
-            hmacAlgoComboBox,
-            hmacKeyTextField,
-            hmacInputTextArea,
-            hmacResultTextField).setup();
+        Set<String> initializedTools = new HashSet<>();
 
         if (settings.ITEMS_ORDER.isEmpty()) {
             toolPanelsByTitle.forEach((title, panelAndIcon) -> toolComboBox.addItem(new ComboBoxWithImageItem(title, panelAndIcon.icon)));
@@ -286,6 +182,11 @@ public class DevToysToolWindow {
         helpLabel.setToolTipText("");
         helpLabel.setVisible(false);
 
+        var ref = new Object() {
+            LinesUtilsToolSetup linesUtilsToolSetup = null;
+            HashToolSetup hashToolSetup = null;
+        };
+
         toolComboBox.addActionListener(e -> {
             int selectedIndex = toolComboBox.getSelectedIndex();
             ComboBoxWithImageItem item = toolComboBox.getItemAt(selectedIndex);
@@ -298,18 +199,39 @@ public class DevToysToolWindow {
                     helpLabel.setToolTipText("<html>" +
                         "Type some text or Base64 and it will be<br>" +
                         "automatically converted as you type.</html>");
+
+                    if (!initializedTools.contains(item.title())) {
+                        new Base64ToolSetup(
+                            base64RadioButtonUTF8,
+                            base64RadioButtonASCII,
+                            base64RawTextArea,
+                            base64Base64TextArea).setup();
+                        initializedTools.add(item.title());
+                    }
                 }
                 case "URL encoder/decoder" -> {
                     helpLabel.setVisible(true);
                     helpLabel.setToolTipText("<html>" +
                         "Type decoded or encoded URL and it will be<br>" +
                         "automatically converted as you type.</html>");
+
+                    if (!initializedTools.contains(item.title())) {
+                        new URLCodecToolSetup(
+                            urlCodecDecodedTextField,
+                            urlCodecEncodedTextField).setup();
+                        initializedTools.add(item.title());
+                    }
                 }
                 case "Hash generator" -> {
                     helpLabel.setVisible(true);
                     helpLabel.setToolTipText("<html>" +
                         "Type text and various hash values will<br>" +
                         "be automatically computed as you type.</html>");
+
+                    if (!initializedTools.contains(item.title())) {
+                        ref.hashToolSetup = getHashToolSetup();
+                        initializedTools.add(item.title());
+                    }
                 }
                 case "Password hash verifier" -> {
                     helpLabel.setVisible(true);
@@ -317,24 +239,56 @@ public class DevToysToolWindow {
                         "and the tool will say if the password<br>" +
                         "verifies the hash with an algorithm like MD5,<br>" +
                         "SHA1/256/384/512 or BCrypt 2A/2B/2Y.</html>");
+
+                    if (!initializedTools.contains(item.title())) {
+                        new PasswordVerifierToolSetup(
+                            passwordVerifierHashTextField,
+                            passwordVerifierInputPassword,
+                            passwordVerifierResultLabel
+                        ).setup();
+                        initializedTools.add(item.title());
+                    }
                 }
                 case "JSON <> String converter" -> {
                     helpLabel.setVisible(true);
                     helpLabel.setToolTipText("<html>" +
                         "Type some JSON and it will be automatically<br>" +
                         "converted to String as you type.</html>");
+
+                    if (!initializedTools.contains(item.title())) {
+                        new JSONStringToolSetup(
+                            jsonStringSplitPane,
+                            jsonStringJsonArea,
+                            jsonStringStringTextArea,
+                            changeOrientationButton).setup();
+                        initializedTools.add(item.title());
+                    }
                 }
                 case "JSON <> YAML converter" -> {
                     helpLabel.setVisible(true);
                     helpLabel.setToolTipText("<html>" +
                         "Type some JSON or YAML and it will be<br>" +
                         "automatically converted as you type.</html>");
+
+                    if (!initializedTools.contains(item.title())) {
+                        new JSONYAMLToolSetup(
+                            jsonyamlJSONTextArea,
+                            jsonyamlYAMLTextArea).setup();
+                        initializedTools.add(item.title());
+                    }
                 }
                 case "BENCODE <> JSON converter" -> {
                     helpLabel.setVisible(true);
                     helpLabel.setToolTipText("<html>" +
                         "Type some BENCODE or JSON and it will be<br>" +
                         "automatically converted as you type.</html>");
+
+                    if (!initializedTools.contains(item.title())) {
+                        new BENCODEJSONToolSetup(
+                            bencodejsonBENCODETextArea,
+                            bencodejsonJSONTextArea).setup();
+                        initializedTools.add(item.title());
+                    }
                 }
                 case "Timestamp converter" -> {
                     helpLabel.setVisible(true);
@@ -342,16 +296,142 @@ public class DevToysToolWindow {
                         "Type a timestamp or update datetime field(s)<br>" +
                         "then hit the <i>Update from timestamp</i> or<br>" +
                         "<i>Update from fields</i> button.</html>");
+
+                    if (!initializedTools.contains(item.title())) {
+                        new TimestampToolSetup(
+                            timestampTimezoneComboBox,
+                            timestampTextArea,
+                            timestampSpinner,
+                            timestampNowButton,
+                            timestampUpdateFromTimestampButton,
+                            timestampFilterTextField,
+                            timestampUpdateFromFieldsButton,
+                            timestampWarningNoZoneIdLabel,
+                            timestampYearSpinner,
+                            timestampDaySpinner,
+                            timestampMonthSpinner,
+                            timestampHourSpinner,
+                            timestampMinuteSpinner,
+                            timestampSecondSpinner,
+                            timestampMillisecondSpinner,
+                            timestampResolutionComboBox,
+                            timestampMillisecondLabel).setup();
+                        initializedTools.add(item.title());
+                    }
                 }
                 case "Lines utils" -> {
-                    linesUtilsToolSetup.activate();
+                    if (!initializedTools.contains(item.title())) {
+                        ref.linesUtilsToolSetup = new LinesUtilsToolSetup(
+                            helpLabel,
+                            linesUtilsComboBox,
+                            linesUtilsCompareButton,
+                            linesUtilsCaseSensitiveCheckBox,
+                            linesUtilsTextArea1,
+                            linesUtilsTextArea2,
+                            linesUtilsResultTextArea,
+                            linesUtilsIgnoreEmptyLinesCheckBox);
+                        ref.linesUtilsToolSetup.setup();
+                        initializedTools.add(item.title());
+                    }
+                    if (ref.linesUtilsToolSetup != null) ref.linesUtilsToolSetup.activate();
+                }
+                case "Fake Data generator" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        new DataFakerToolSetup(
+                            dataFakerGeneratorComboBox,
+                            dataFakerGenerateButton,
+                            dataFakerLocaleComboBox,
+                            dataFakerTextArea).setup();
+                        initializedTools.add(item.title());
+                    }
+                }
+                case "Cron parser" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        new CronToolSetup(
+                            cronExpressionTextField,
+                            cronExpressionHowManyDaysSpinner,
+                            cronTypeComboBox,
+                            cronTextArea,
+                            explainButton).setup();
+                        initializedTools.add(item.title());
+                    }
+                }
+                case "Lorem Ipsum generator" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        new LoremIpsumToolSetup(
+                            loremIpsumGenerateButton,
+                            loremIpsumTextArea).setup();
+                        initializedTools.add(item.title());
+                    }
+                }
+                case "UUID generator" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        new UUIDToolSetup(
+                            uuidGenerateButton,
+                            uuidTextArea).setup();
+                        initializedTools.add(item.title());
+                    }
+                }
+                case "Properties to YAML converter" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        new PropertiesYamlToolSetup(
+                            propertiesYamlTypeComboBox,
+                            propertiesYamlPropertiesTextArea,
+                            propertiesYamlYamlTextArea).setup();
+                        initializedTools.add(item.title());
+                    }
+                }
+                case "ASCII <> HEX converter" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        new ASCIIHEXToolSetup(
+                            asciihexASCIITextArea,
+                            asciihexHEXTextArea,
+                            asciihexSpacesCheckBox).setup();
+                        initializedTools.add(item.title());
+                    }
+                }
+                case "Text escape/unescape" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        new EscapeToolSetup(
+                            escapeComboBox,
+                            unescapedTextArea,
+                            escapedTextArea).setup();
+                        initializedTools.add(item.title());
+                    }
+                }
+                case "HMAC generator" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        new HMACToolSetup(
+                            hmacAlgoComboBox,
+                            hmacKeyTextField,
+                            hmacInputTextArea,
+                            hmacResultTextField).setup();
+                        initializedTools.add(item.title());
+                    }
+                }
+                case "Password strength evaluator" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        if(ref.hashToolSetup == null) ref.hashToolSetup = getHashToolSetup();
+
+                        new PasswordStrengthToolSetup(
+                            passwordStrengthPasswordTextField,
+                            passwordStrengthReportTextArea,
+                            hashItButton,
+                            hashInputTextArea,
+                            event -> {
+                                hashInputTextArea.setText(passwordStrengthPasswordTextField.getText());
+                                selectToolByName("Hash generator");
+                                ref.hashToolSetup.update();
+                            }).setup();
+                        initializedTools.add(item.title());
+                    }
                 }
             }
             toolComboBox.removeItemAt(selectedIndex);
             toolComboBox.insertItemAt(item, 0);
             toolComboBox.setSelectedIndex(0);
 
-            if (!item.title().equals(settings.ITEMS_ORDER.get(0))) {
+            if (settings.ITEMS_ORDER.isEmpty() || !item.title().equals(settings.ITEMS_ORDER.get(0))) {
                 settings.saveItemsOrder(toolComboBox);
             }
         });
@@ -393,4 +473,19 @@ public class DevToysToolWindow {
     public JPanel getContent() {
         return mainPanel;
     }
+
+    private HashToolSetup getHashToolSetup() {
+        HashToolSetup hashToolSetup = new HashToolSetup(
+            hashInputTextArea,
+            hashMD5TextField,
+            hashSHA1TextField,
+            hashSHA256TextField,
+            hashSHA384TextField,
+            hashSHA512TextField,
+            hashBCrypt2ATextField,
+            hashBCrypt2BTextField,
+            hashBCrypt2YTextField);
+        hashToolSetup.setup();
+        return hashToolSetup;
+    };
 }

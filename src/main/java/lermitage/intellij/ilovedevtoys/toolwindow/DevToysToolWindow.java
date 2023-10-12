@@ -164,7 +164,7 @@ public class DevToysToolWindow {
         toolPanelsByTitle.put("BENCODE <> JSON converter", new PanelAndIcon(bencodejsonPanel, iconsPath + "BencodeJson.svg"));
         toolPanelsByTitle.put("JSON <> YAML converter", new PanelAndIcon(jsonyamlPanel, iconsPath + "JsonYaml.svg"));
         toolPanelsByTitle.put("JSON <> String converter", new PanelAndIcon(jsonStringPanel, iconsPath + "JsonString.svg"));
-        toolPanelsByTitle.put("Properties to YAML converter ", new PanelAndIcon(propertiesYamlPanel, iconsPath + "PropertiesYaml.svg"));
+        toolPanelsByTitle.put("Properties to YAML converter", new PanelAndIcon(propertiesYamlPanel, iconsPath + "PropertiesYaml.svg"));
 
         Set<String> initializedTools = new HashSet<>();
 
@@ -180,18 +180,6 @@ public class DevToysToolWindow {
             hashBCrypt2YTextField);
         hashToolSetup.setup();
 
-        new PropertiesYamlToolSetup(
-            propertiesYamlTypeComboBox,
-            propertiesYamlPropertiesTextArea,
-            propertiesYamlYamlTextArea).setup();
-        new ASCIIHEXToolSetup(
-            asciihexASCIITextArea,
-            asciihexHEXTextArea,
-            asciihexSpacesCheckBox).setup();
-        new EscapeToolSetup(
-            escapeComboBox,
-            unescapedTextArea,
-            escapedTextArea).setup();
         new PasswordStrengthToolSetup(
             passwordStrengthPasswordTextField,
             passwordStrengthReportTextArea,
@@ -202,11 +190,6 @@ public class DevToysToolWindow {
                 selectToolByName("Hash generator");
                 hashToolSetup.update();
             }).setup();
-        new HMACToolSetup(
-            hmacAlgoComboBox,
-            hmacKeyTextField,
-            hmacInputTextArea,
-            hmacResultTextField).setup();
 
         if (settings.ITEMS_ORDER.isEmpty()) {
             toolPanelsByTitle.forEach((title, panelAndIcon) -> toolComboBox.addItem(new ComboBoxWithImageItem(title, panelAndIcon.icon)));
@@ -403,6 +386,43 @@ public class DevToysToolWindow {
                         new UUIDToolSetup(
                             uuidGenerateButton,
                             uuidTextArea).setup();
+                        initializedTools.add(item.title());
+                    }
+                }
+                case "Properties to YAML converter" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        new PropertiesYamlToolSetup(
+                            propertiesYamlTypeComboBox,
+                            propertiesYamlPropertiesTextArea,
+                            propertiesYamlYamlTextArea).setup();
+                        initializedTools.add(item.title());
+                    }
+                }
+                case "ASCII <> HEX converter" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        new ASCIIHEXToolSetup(
+                            asciihexASCIITextArea,
+                            asciihexHEXTextArea,
+                            asciihexSpacesCheckBox).setup();
+                        initializedTools.add(item.title());
+                    }
+                }
+                case "Text escape/unescape" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        new EscapeToolSetup(
+                            escapeComboBox,
+                            unescapedTextArea,
+                            escapedTextArea).setup();
+                        initializedTools.add(item.title());
+                    }
+                }
+                case "HMAC generator" -> {
+                    if (!initializedTools.contains(item.title())) {
+                        new HMACToolSetup(
+                            hmacAlgoComboBox,
+                            hmacKeyTextField,
+                            hmacInputTextArea,
+                            hmacResultTextField).setup();
                         initializedTools.add(item.title());
                     }
                 }

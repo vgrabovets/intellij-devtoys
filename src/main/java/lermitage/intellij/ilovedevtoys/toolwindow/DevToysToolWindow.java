@@ -1,6 +1,7 @@
 package lermitage.intellij.ilovedevtoys.toolwindow;
 
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.ui.SearchTextField;
 import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBTextField;
 import lermitage.intellij.ilovedevtoys.toolwindow.settings.DevToysToolWindowSettings;
@@ -138,6 +139,7 @@ public class DevToysToolWindow {
     private JTextField passwordVerifierHashTextField;
     private JBTextField passwordVerifierResultLabel;
     private JButton hashItButton;
+    private SearchTextField jsonSearchField;
 
     private final LinkedHashMap<String, PanelAndIcon> toolPanelsByTitle = new LinkedHashMap<>();
 
@@ -260,7 +262,8 @@ public class DevToysToolWindow {
                             jsonStringSplitPane,
                             jsonStringJsonArea,
                             jsonStringStringTextArea,
-                            changeOrientationButton).setup();
+                            changeOrientationButton,
+                            jsonSearchField).setup();
                         initializedTools.add(item.title());
                     }
                 }

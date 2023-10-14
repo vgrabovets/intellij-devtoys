@@ -1,11 +1,18 @@
 package lermitage.intellij.ilovedevtoys.toolwindow.setup;
 
+import com.intellij.ui.JBColor;
+import com.intellij.ui.SearchTextField;
 import lermitage.intellij.ilovedevtoys.tools.JSONStringTools;
 import lermitage.intellij.ilovedevtoys.toolwindow.settings.JSONStringToolSettings;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 
 public class JSONStringToolSetup extends AbstractToolSetup {
 
@@ -13,17 +20,20 @@ public class JSONStringToolSetup extends AbstractToolSetup {
     private final JTextArea jsonStringJsonArea;
     private final JTextArea jsonStringStringTextArea;
     private final JButton changeOrientationButton;
+    private final SearchTextField jsonSearchField;
+    private final Highlighter.HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(JBColor.CYAN);
 
     public JSONStringToolSetup(
         JSplitPane jsonStringSplitPane,
         JTextArea jsonStringJsonArea,
         JTextArea jsonStringStringTextArea,
-        JButton changeOrientationButton
-    ) {
+        JButton changeOrientationButton,
+        SearchTextField jsonSearchField) {
         this.jsonStringSplitPane = jsonStringSplitPane;
         this.jsonStringJsonArea = jsonStringJsonArea;
         this.jsonStringStringTextArea = jsonStringStringTextArea;
         this.changeOrientationButton = changeOrientationButton;
+        this.jsonSearchField = jsonSearchField;
     }
 
     public void setup() {
@@ -65,9 +75,10 @@ public class JSONStringToolSetup extends AbstractToolSetup {
             }
         });
 
-        jsonStringSplitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY , evt -> {
-            settings.DIVIDER_LOCATION = (int) evt.getNewValue();
-        });
+        jsonStringSplitPane.addPropertyChangeListener(
+            JSplitPane.DIVIDER_LOCATION_PROPERTY,
+            evt -> settings.DIVIDER_LOCATION = (int) evt.getNewValue()
+        );
 
         changeOrientationButton.addActionListener(e -> {
             float JsonAreaPercentage = (float) jsonStringSplitPane.getDividerLocation() /
@@ -79,6 +90,35 @@ public class JSONStringToolSetup extends AbstractToolSetup {
                 (jsonStringSplitPane.getMaximumDividerLocation() - jsonStringSplitPane.getMinimumDividerLocation()) * JsonAreaPercentage
             );
             jsonStringSplitPane.setDividerLocation(dividerLocation);
+        });
+
+        jsonSearchField.addKeyboardListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                jsonStringJsonArea.getHighlighter().removeAllHighlights();
+                String textToSearch = jsonSearchField.getText();
+                String text = jsonStringJsonArea.getText();
+                if (textToSearch.isEmpty() || text.isEmpty()) return;
+                Matcher matcher = Pattern.compile(textToSearch).matcher(text);
+                while (matcher.find()) {
+                    int start = matcher.start();
+                    int end = matcher.end();
+                    try {
+                        jsonStringJsonArea
+                            .getHighlighter()
+                            .addHighlight(start, end, painter);
+                    } catch (BadLocationException ignored) {
+                    }
+                }
+            }
         });
     }
 }

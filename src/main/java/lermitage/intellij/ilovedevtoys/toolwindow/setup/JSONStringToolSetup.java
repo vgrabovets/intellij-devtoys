@@ -5,11 +5,13 @@ import com.intellij.ui.SearchTextField;
 import lermitage.intellij.ilovedevtoys.tools.JSONStringTools;
 import lermitage.intellij.ilovedevtoys.toolwindow.settings.JSONStringToolSettings;
 
-import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
@@ -92,33 +94,39 @@ public class JSONStringToolSetup extends AbstractToolSetup {
             jsonStringSplitPane.setDividerLocation(dividerLocation);
         });
 
-        jsonSearchField.addKeyboardListener(new KeyListener() {
+        jsonSearchField.addDocumentListener(new DocumentListener() {
             @Override
-            public void keyTyped(KeyEvent e) {
+            public void insertUpdate(DocumentEvent e) {
+                highlightSearchedText();
             }
 
             @Override
-            public void keyPressed(KeyEvent e) {
+            public void removeUpdate(DocumentEvent e) {
+                highlightSearchedText();
             }
 
             @Override
-            public void keyReleased(KeyEvent e) {
-                jsonStringJsonArea.getHighlighter().removeAllHighlights();
-                String textToSearch = jsonSearchField.getText();
-                String text = jsonStringJsonArea.getText();
-                if (textToSearch.isEmpty() || text.isEmpty()) return;
-                Matcher matcher = Pattern.compile(textToSearch).matcher(text);
-                while (matcher.find()) {
-                    int start = matcher.start();
-                    int end = matcher.end();
-                    try {
-                        jsonStringJsonArea
-                            .getHighlighter()
-                            .addHighlight(start, end, painter);
-                    } catch (BadLocationException ignored) {
-                    }
-                }
+            public void changedUpdate(DocumentEvent e) {
+                highlightSearchedText();
             }
         });
+    }
+
+    private void highlightSearchedText() {
+        jsonStringJsonArea.getHighlighter().removeAllHighlights();
+        String textToSearch = jsonSearchField.getText();
+        String text = jsonStringJsonArea.getText();
+        if (textToSearch.isEmpty() || text.isEmpty()) return;
+        Matcher matcher = Pattern.compile(textToSearch).matcher(text);
+        while (matcher.find()) {
+            int start = matcher.start();
+            int end = matcher.end();
+            try {
+                jsonStringJsonArea
+                    .getHighlighter()
+                    .addHighlight(start, end, painter);
+            } catch (BadLocationException ignored) {
+            }
+        }
     }
 }

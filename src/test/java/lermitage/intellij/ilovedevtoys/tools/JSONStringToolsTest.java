@@ -134,4 +134,15 @@ class JSONStringToolsTest {
         String formattedJsonString = JSONStringTools.prettyPrintJson(blankJsonString);
         assertEquals("", formattedJsonString);
     }
+
+    @Test
+    public void shouldRevertOneCharEscape() {
+        String uglyJsonString = "{\"arguments\": \"{\"domains\": \"michelin.com\"}\"}";
+        String formattedJsonString = JSONStringTools.prettyPrintJson(uglyJsonString);
+        String expectedPrettyJson = """
+            {
+              "arguments": "{"domains": "michelin.com"}"
+            }""";
+        assertEquals(expectedPrettyJson, formattedJsonString);
+    }
 }

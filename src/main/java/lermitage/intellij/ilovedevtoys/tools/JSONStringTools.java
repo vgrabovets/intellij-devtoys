@@ -38,7 +38,11 @@ public class JSONStringTools {
         jsonString = jsonString.replaceAll("\\\\\"", "\"");
         jsonString = StringUtils.strip(jsonString, "\"");
         MalformedStringRecord prevMalformedStringRecord = new MalformedStringRecord("", -1, -1);
-        return prettyPrintJsonWithTryCatch(jsonString, prevMalformedStringRecord, gson);
+        try {
+            return prettyPrintJsonWithTryCatch(jsonString, prevMalformedStringRecord, gson);
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
     }
 
     private static String prettyPrintJsonWithTryCatch(String jsonString, MalformedStringRecord prevMalformedStringRecord, Gson gson) {
@@ -61,11 +65,8 @@ public class JSONStringTools {
             } else {
                 modifiedJsonString = escapeChar(jsonString, line, column);
             }
-
             MalformedStringRecord malformedJsonRecord = new MalformedStringRecord(jsonString, line, column);
             return prettyPrintJsonWithTryCatch(modifiedJsonString, malformedJsonRecord, gson);
-        } catch (Exception e) {
-            return "Error: " + e.getMessage();
         }
     }
 

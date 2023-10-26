@@ -129,6 +129,13 @@ class JSONStringToolsTest {
     }
 
     @Test
+    public void shouldPrettyPrintJsonOutputError2() {
+        String invalidJsonString = "size=50 trackTotalHits=False sources=['company.rootUrl']";
+        String formattedJsonString = JSONStringTools.prettyPrintJson(invalidJsonString);
+        assertEquals("Error: Cannot fix quotes at line 1 column 1", formattedJsonString);
+    }
+
+    @Test
     public void shouldPrettyPrintJsonOutputBlank() {
         String blankJsonString = "";
         String formattedJsonString = JSONStringTools.prettyPrintJson(blankJsonString);

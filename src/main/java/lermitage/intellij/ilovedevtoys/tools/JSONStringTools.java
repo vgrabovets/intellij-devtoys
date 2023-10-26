@@ -97,7 +97,7 @@ public class JSONStringTools {
             }
         }
         if (badCharPosition < 0) {
-            throw new RuntimeException(String.format("Cannot fix quotes at line %d column %d", line, column));
+            throw new RuntimeException(String.format("Malformed JSON, cannot fix it automatically at line %d column %d", line, column));
         }
         fixedLine = fixedLine.substring(0, badCharPosition) + "\\" + fixedLine.substring(badCharPosition);
         stringArray[line - 1] = fixedLine;

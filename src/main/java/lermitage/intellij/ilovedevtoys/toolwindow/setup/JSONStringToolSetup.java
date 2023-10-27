@@ -126,7 +126,9 @@ public class JSONStringToolSetup extends AbstractToolSetup {
                     .getHighlighter()
                     .addHighlight(start, end, painter);
             } catch (BadLocationException ignored) {
+                continue;
             }
+            jsonStringJsonArea.select(start, end);
         }
     }
 }

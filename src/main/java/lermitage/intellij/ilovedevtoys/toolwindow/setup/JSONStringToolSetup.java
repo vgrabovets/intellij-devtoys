@@ -23,6 +23,8 @@ public class JSONStringToolSetup extends AbstractToolSetup {
     private final JTextArea jsonStringStringTextArea;
     private final JButton changeOrientationButton;
     private final SearchTextField jsonSearchField;
+    private final JButton findNext;
+    private final JButton findPrev;
     private final Highlighter.HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(JBColor.CYAN);
 
     public JSONStringToolSetup(
@@ -30,12 +32,16 @@ public class JSONStringToolSetup extends AbstractToolSetup {
         JTextArea jsonStringJsonArea,
         JTextArea jsonStringStringTextArea,
         JButton changeOrientationButton,
-        SearchTextField jsonSearchField) {
+        SearchTextField jsonSearchField,
+        JButton findNext,
+        JButton findPrev) {
         this.jsonStringSplitPane = jsonStringSplitPane;
         this.jsonStringJsonArea = jsonStringJsonArea;
         this.jsonStringStringTextArea = jsonStringStringTextArea;
         this.changeOrientationButton = changeOrientationButton;
         this.jsonSearchField = jsonSearchField;
+        this.findNext = findNext;
+        this.findPrev = findPrev;
     }
 
     public void setup() {
@@ -110,6 +116,9 @@ public class JSONStringToolSetup extends AbstractToolSetup {
                 highlightSearchedText();
             }
         });
+
+        findNext.addActionListener(e -> System.out.println("find next"));
+        findPrev.addActionListener(e -> System.out.println("find prev"));
     }
 
     private void highlightSearchedText() {

@@ -141,6 +141,8 @@ public class DevToysToolWindow {
     private JBTextField passwordVerifierResultLabel;
     private JButton hashItButton;
     private SearchTextField jsonSearchField;
+    private JButton findNext;
+    private JButton findPrev;
 
     private final LinkedHashMap<String, PanelAndIcon> toolPanelsByTitle = new LinkedHashMap<>();
 
@@ -265,7 +267,10 @@ public class DevToysToolWindow {
                             jsonStringJsonArea,
                             jsonStringStringTextArea,
                             changeOrientationButton,
-                            jsonSearchField).setup();
+                            jsonSearchField,
+                            findNext,
+                            findPrev
+                            ).setup();
                         initializedTools.add(item.title());
                     }
                 }

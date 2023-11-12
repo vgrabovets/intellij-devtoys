@@ -2,11 +2,13 @@ package lermitage.intellij.ilovedevtoys.toolwindow.setup;
 
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SearchTextField;
-import lermitage.intellij.ilovedevtoys.tools.JSONStringTools;
-import lermitage.intellij.ilovedevtoys.toolwindow.settings.JSONStringToolSettings;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.*;
@@ -14,7 +16,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.Highlighter;
+import javax.swing.text.Highlighter.HighlightPainter;
+import lermitage.intellij.ilovedevtoys.tools.JSONStringTools;
+import lermitage.intellij.ilovedevtoys.toolwindow.settings.JSONStringToolSettings;
 
 public class JSONStringToolSetup extends AbstractToolSetup {
 
@@ -25,7 +29,11 @@ public class JSONStringToolSetup extends AbstractToolSetup {
     private final SearchTextField jsonSearchField;
     private final JButton findNext;
     private final JButton findPrev;
-    private final Highlighter.HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(JBColor.CYAN);
+    private final HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(JBColor.CYAN);
+    private final HighlightPainter currentPainter = new DefaultHighlighter.DefaultHighlightPainter(JBColor.YELLOW);
+    private Matcher matcher;
+    private Map<List<Integer>, Object> highlights = new HashMap<>();
+    private List<Integer> currentHighlightCoordinates;
 
     public JSONStringToolSetup(
         JSplitPane jsonStringSplitPane,
@@ -103,41 +111,89 @@ public class JSONStringToolSetup extends AbstractToolSetup {
         jsonSearchField.addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                highlightSearchedText();
+                findAndHighlightText();
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                highlightSearchedText();
+                findAndHighlightText();
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                highlightSearchedText();
+                findAndHighlightText();
             }
         });
 
-        findNext.addActionListener(e -> System.out.println("find next"));
+        findNext.addActionListener(e -> {
+            if (matcher == null) {
+                System.out.println("return");
+                return;
+            }
+            if (matcher.hitEnd()) {
+                System.out.println("hit end");
+                matcher.reset();
+            }
+
+            if (matcher.find()) {
+                System.out.println("find");
+                if (currentHighlightCoordinates != null) {
+                    Object prevHighlight = highlights.get(currentHighlightCoordinates);
+                    if (prevHighlight != null) {
+                        try {
+                            jsonStringJsonArea.getHighlighter().changeHighlight(
+                                prevHighlight,
+                                currentHighlightCoordinates.get(0),
+                                currentHighlightCoordinates.get(1)
+                            );
+                        } catch (BadLocationException ignored) {}
+                    }
+                }
+                int start = matcher.start();
+                int end = matcher.end();
+                currentHighlightCoordinates = new ArrayList<>(Arrays.asList(start, end));
+                Object prevHighlight = highlights.get(currentHighlightCoordinates);
+                if (prevHighlight != null) {
+                    System.out.println("remove highlight");
+                    jsonStringJsonArea.getHighlighter().removeHighlight(prevHighlight);
+                }
+                try {
+                    jsonStringJsonArea
+                        .getHighlighter()
+                        .addHighlight(start, end, currentPainter);
+
+                } catch (BadLocationException ignored) {}
+            }
+        });
         findPrev.addActionListener(e -> System.out.println("find prev"));
     }
 
-    private void highlightSearchedText() {
+    private void findAndHighlightText() {
         jsonStringJsonArea.getHighlighter().removeAllHighlights();
+        highlights = new HashMap<>();
+        currentHighlightCoordinates = null;
         String textToSearch = jsonSearchField.getText();
         String text = jsonStringJsonArea.getText();
-        if (textToSearch.isEmpty() || text.isEmpty()) return;
-        Matcher matcher = Pattern.compile(textToSearch).matcher(text);
+        if (textToSearch.isEmpty() || text.isEmpty())
+            return;
+        matcher = Pattern.compile(textToSearch).matcher(text);
         while (matcher.find()) {
             int start = matcher.start();
             int end = matcher.end();
+            Object highlight;
             try {
-                jsonStringJsonArea
+                highlight = jsonStringJsonArea
                     .getHighlighter()
                     .addHighlight(start, end, painter);
+
             } catch (BadLocationException ignored) {
-                continue;
+                System.out.println("BadLocationException");
+                return;
             }
+            highlights.put(List.of(start, end), highlight);
             jsonStringJsonArea.select(start, end);
         }
+        if (matcher.hitEnd())
+            matcher.reset();
     }
 }

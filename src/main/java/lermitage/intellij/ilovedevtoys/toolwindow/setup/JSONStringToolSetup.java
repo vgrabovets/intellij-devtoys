@@ -125,47 +125,53 @@ public class JSONStringToolSetup extends AbstractToolSetup {
             }
         });
 
-        findNext.addActionListener(e -> {
-            if (matcher == null) {
-                System.out.println("return");
-                return;
-            }
-            if (matcher.hitEnd()) {
-                System.out.println("hit end");
-                matcher.reset();
-            }
-
-            if (matcher.find()) {
-                System.out.println("find");
-                if (currentHighlightCoordinates != null) {
-                    Object prevHighlight = highlights.get(currentHighlightCoordinates);
-                    if (prevHighlight != null) {
-                        try {
-                            jsonStringJsonArea.getHighlighter().changeHighlight(
-                                prevHighlight,
-                                currentHighlightCoordinates.get(0),
-                                currentHighlightCoordinates.get(1)
-                            );
-                        } catch (BadLocationException ignored) {}
-                    }
-                }
-                int start = matcher.start();
-                int end = matcher.end();
-                currentHighlightCoordinates = new ArrayList<>(Arrays.asList(start, end));
-                Object prevHighlight = highlights.get(currentHighlightCoordinates);
-                if (prevHighlight != null) {
-                    System.out.println("remove highlight");
-                    jsonStringJsonArea.getHighlighter().removeHighlight(prevHighlight);
-                }
-                try {
-                    jsonStringJsonArea
-                        .getHighlighter()
-                        .addHighlight(start, end, currentPainter);
-
-                } catch (BadLocationException ignored) {}
-            }
-        });
+        findNext.addActionListener(e -> findNextAction());
         findPrev.addActionListener(e -> System.out.println("find prev"));
+    }
+
+    private void findNextAction() {
+        if (matcher == null) {
+            return;
+        }
+        if (matcher.hitEnd()) {
+            matcher.reset();
+        }
+
+        if (currentHighlightCoordinates != null) {
+            Object prevHighlight = highlights.get(currentHighlightCoordinates);
+            if (prevHighlight != null) {
+                try {
+                    jsonStringJsonArea.getHighlighter().removeHighlight(prevHighlight);
+                    prevHighlight = jsonStringJsonArea.getHighlighter().addHighlight(
+                        currentHighlightCoordinates.get(0),
+                        currentHighlightCoordinates.get(1),
+                        painter
+                    );
+                    highlights.put(currentHighlightCoordinates, prevHighlight);
+                } catch (BadLocationException ignored) {
+                }
+            }
+        }
+
+        if (matcher.find()) {
+            int start = matcher.start();
+            int end = matcher.end();
+            currentHighlightCoordinates = new ArrayList<>(Arrays.asList(start, end));
+            Object prevHighlight = highlights.get(currentHighlightCoordinates);
+            if (prevHighlight != null) {
+                jsonStringJsonArea.getHighlighter().removeHighlight(prevHighlight);
+            }
+            try {
+                Object currentHighlight = jsonStringJsonArea
+                    .getHighlighter()
+                    .addHighlight(start, end, currentPainter);
+                highlights.put(currentHighlightCoordinates, currentHighlight);
+
+            } catch (BadLocationException ignored) {
+            }
+        } else {
+            findNextAction();
+        }
     }
 
     private void findAndHighlightText() {
@@ -187,7 +193,6 @@ public class JSONStringToolSetup extends AbstractToolSetup {
                     .addHighlight(start, end, painter);
 
             } catch (BadLocationException ignored) {
-                System.out.println("BadLocationException");
                 return;
             }
             highlights.put(List.of(start, end), highlight);

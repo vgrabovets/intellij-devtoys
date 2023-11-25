@@ -149,10 +149,11 @@ public class JSONStringToolSetup extends AbstractToolSetup {
         if (currentHighlightIndex >= highlightRecords.size())
             currentHighlightIndex = 0;
 
-        repaintHighlight(currentHighlightIndex, currentPainter);
+        HighlightRecord newHighlight = repaintHighlight(currentHighlightIndex, currentPainter);
+        jsonStringJsonArea.select(newHighlight.start, newHighlight.end);
     }
 
-    private void repaintHighlight(int index, HighlightPainter painter) {
+    private HighlightRecord repaintHighlight(int index, HighlightPainter painter) {
         HighlightRecord prevHighlightRecord = highlightRecords.get(index);
         try {
             jsonStringJsonArea.getHighlighter().removeHighlight(prevHighlightRecord.highlight);
@@ -163,6 +164,7 @@ public class JSONStringToolSetup extends AbstractToolSetup {
             );
         } catch (BadLocationException ignored) {
         }
+        return prevHighlightRecord;
     }
 
     private void findAndHighlightText() {
@@ -186,7 +188,6 @@ public class JSONStringToolSetup extends AbstractToolSetup {
                 return;
             }
             highlightRecords.add(new HighlightRecord(start, end, highlight));
-            jsonStringJsonArea.select(start, end);
         }
     }
 }

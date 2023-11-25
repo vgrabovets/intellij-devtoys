@@ -26,7 +26,7 @@ public class JSONStringToolSetup extends AbstractToolSetup {
     private final SearchTextField jsonSearchField;
     private final JButton findNext;
     private final JButton findPrev;
-    private final HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(JBColor.CYAN);
+    private final HighlightPainter defaultPainter = new DefaultHighlighter.DefaultHighlightPainter(JBColor.CYAN);
     private final HighlightPainter currentPainter = new DefaultHighlighter.DefaultHighlightPainter(JBColor.YELLOW);
 
     private static class HighlightRecord {
@@ -142,29 +142,25 @@ public class JSONStringToolSetup extends AbstractToolSetup {
         if (highlightRecords.isEmpty())
             return;
 
-        if (currentHighlightIndex != -1) {
-            HighlightRecord prevHighlightRecord = highlightRecords.get(currentHighlightIndex);
-            try {
-                jsonStringJsonArea.getHighlighter().removeHighlight(prevHighlightRecord.highlight);
-                prevHighlightRecord.highlight = jsonStringJsonArea.getHighlighter().addHighlight(
-                    prevHighlightRecord.start,
-                    prevHighlightRecord.end,
-                    painter
-                );
-            } catch (BadLocationException ignored) {
-            }
-        }
+        if (currentHighlightIndex != -1)
+            repaintHighlight(currentHighlightIndex, defaultPainter);
 
         currentHighlightIndex++;
         if (currentHighlightIndex >= highlightRecords.size())
             currentHighlightIndex = 0;
 
-        HighlightRecord prevHighlightRecord = highlightRecords.get(currentHighlightIndex);
-        jsonStringJsonArea.getHighlighter().removeHighlight(prevHighlightRecord.highlight);
+        repaintHighlight(currentHighlightIndex, currentPainter);
+    }
+
+    private void repaintHighlight(int index, HighlightPainter painter) {
+        HighlightRecord prevHighlightRecord = highlightRecords.get(index);
         try {
-            prevHighlightRecord.highlight = jsonStringJsonArea
-                .getHighlighter()
-                .addHighlight(prevHighlightRecord.start, prevHighlightRecord.end, currentPainter);
+            jsonStringJsonArea.getHighlighter().removeHighlight(prevHighlightRecord.highlight);
+            prevHighlightRecord.highlight = jsonStringJsonArea.getHighlighter().addHighlight(
+                prevHighlightRecord.start,
+                prevHighlightRecord.end,
+                painter
+            );
         } catch (BadLocationException ignored) {
         }
     }
@@ -185,8 +181,7 @@ public class JSONStringToolSetup extends AbstractToolSetup {
             try {
                 highlight = jsonStringJsonArea
                     .getHighlighter()
-                    .addHighlight(start, end, painter);
-
+                    .addHighlight(start, end, defaultPainter);
             } catch (BadLocationException ignored) {
                 return;
             }

@@ -129,9 +129,27 @@ class JSONStringToolsTest {
     }
 
     @Test
+    public void shouldPrettyPrintJsonOutputError2() {
+        String invalidJsonString = "size=50 trackTotalHits=False sources=['company.rootUrl']";
+        String formattedJsonString = JSONStringTools.prettyPrintJson(invalidJsonString);
+        assertEquals("Error: Malformed JSON, cannot fix it automatically at line 1 column 1", formattedJsonString);
+    }
+
+    @Test
     public void shouldPrettyPrintJsonOutputBlank() {
         String blankJsonString = "";
         String formattedJsonString = JSONStringTools.prettyPrintJson(blankJsonString);
         assertEquals("", formattedJsonString);
+    }
+
+    @Test
+    public void shouldRevertOneCharEscape() {
+        String uglyJsonString = "{\"arguments\": \"{\"domains\": \"michelin.com\"}\"}";
+        String formattedJsonString = JSONStringTools.prettyPrintJson(uglyJsonString);
+        String expectedPrettyJson = """
+            {
+              "arguments": "{"domains": "michelin.com"}"
+            }""";
+        assertEquals(expectedPrettyJson, formattedJsonString);
     }
 }

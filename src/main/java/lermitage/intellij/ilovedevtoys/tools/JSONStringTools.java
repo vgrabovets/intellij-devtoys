@@ -29,12 +29,23 @@ public class JSONStringTools {
         }
     }
 
+    private record MalformedStringRecord(String string, int line, int column) {
+    }
+
     public static String prettyPrintJson(String jsonString) {
         if (jsonString.isBlank()) return "";
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         jsonString = jsonString.replaceAll("\\\\\"", "\"");
         jsonString = StringUtils.strip(jsonString, "\"");
+        MalformedStringRecord prevMalformedStringRecord = new MalformedStringRecord("", -1, -1);
+        try {
+            return prettyPrintJsonWithTryCatch(jsonString, prevMalformedStringRecord, gson);
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
+    }
 
+    private static String prettyPrintJsonWithTryCatch(String jsonString, MalformedStringRecord prevMalformedStringRecord, Gson gson) {
         try {
             Object jsonObject = gson.fromJson(jsonString, Object.class);
             String result = gson.toJson(jsonObject);
@@ -44,14 +55,22 @@ public class JSONStringTools {
             if (lineColumn == null) return "Error: " + e.getMessage();
             int line = lineColumn[0];
             int column = lineColumn[1];
-            String modifiedJsonString = fixQuotes(jsonString, line, column);
-            return prettyPrintJson(modifiedJsonString);
-        } catch (Exception e) {
-            return "Error: " + e.getMessage();
+
+            String modifiedJsonString;
+            if (
+                (line == prevMalformedStringRecord.line() && column < prevMalformedStringRecord.column())
+                    || line < prevMalformedStringRecord.line()
+            ) {
+                modifiedJsonString = escapeChar(prevMalformedStringRecord.string(), line, column);
+            } else {
+                modifiedJsonString = escapeChar(jsonString, line, column);
+            }
+            MalformedStringRecord malformedJsonRecord = new MalformedStringRecord(jsonString, line, column);
+            return prettyPrintJsonWithTryCatch(modifiedJsonString, malformedJsonRecord, gson);
         }
     }
 
-    private final static String errorPattern = "MalformedJsonException: Unterminated object at line (?<line>\\d+) column (?<column>\\d+) path";
+    private final static String errorPattern = "MalformedJsonException: .+ at line (?<line>\\d+) column (?<column>\\d+) path";
     private final static Pattern pattern = Pattern.compile(errorPattern);
 
     private static int @Nullable [] parseJsonErrorString(String errorString) {
@@ -66,7 +85,7 @@ public class JSONStringTools {
         return null;
     }
 
-    private static String fixQuotes(String jsonString, int line, int column) throws RuntimeException {
+    private static String escapeChar(String jsonString, int line, int column) throws RuntimeException {
         String[] stringArray = jsonString.split("\n");
         String fixedLine = stringArray[line - 1];
         int badCharPosition = column - 2;
@@ -78,7 +97,7 @@ public class JSONStringTools {
             }
         }
         if (badCharPosition < 0) {
-            throw new RuntimeException(String.format("Cannot fix quotes at line %d column %d", line, column));
+            throw new RuntimeException(String.format("Malformed JSON, cannot fix it automatically at line %d column %d", line, column));
         }
         fixedLine = fixedLine.substring(0, badCharPosition) + "\\" + fixedLine.substring(badCharPosition);
         stringArray[line - 1] = fixedLine;

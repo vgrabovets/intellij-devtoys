@@ -134,20 +134,26 @@ public class JSONStringToolSetup extends AbstractToolSetup {
             }
         });
 
-        findNext.addActionListener(e -> findNextAction());
-        findPrev.addActionListener(e -> System.out.println("find prev"));
+        findNext.addActionListener(e -> findStringAction(true));
+        findPrev.addActionListener(e -> findStringAction(false));
     }
 
-    private void findNextAction() {
+    private void findStringAction(boolean forward) {
         if (highlightRecords.isEmpty())
             return;
 
         if (currentHighlightIndex != -1)
             repaintHighlight(currentHighlightIndex, defaultPainter);
 
-        currentHighlightIndex++;
-        if (currentHighlightIndex >= highlightRecords.size())
-            currentHighlightIndex = 0;
+        if (forward) {
+            currentHighlightIndex++;
+            if (currentHighlightIndex >= highlightRecords.size())
+                currentHighlightIndex = 0;
+        } else {
+            currentHighlightIndex--;
+            if (currentHighlightIndex == -1)
+                currentHighlightIndex = highlightRecords.size() - 1;
+        }
 
         HighlightRecord newHighlight = repaintHighlight(currentHighlightIndex, currentPainter);
         jsonStringJsonArea.select(newHighlight.start, newHighlight.end);

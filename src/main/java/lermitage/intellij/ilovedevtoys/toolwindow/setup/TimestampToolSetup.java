@@ -230,6 +230,36 @@ public class TimestampToolSetup extends AbstractToolSetup {
         timestampUpdateFromFieldsButton.setIcon(IconLoader.getIcon("ilovedevtoys/toolicons/refresh.svg", DevToysToolWindow.class));
         timestampUpdateFromTimestampButton.addActionListener(e -> updateTimestampToolOnTimestampSpinnerUpdate());
         timestampUpdateFromFieldsButton.addActionListener(e -> updateTimestampToolOnTimestampFieldsUpdate());
+
+        JTextField timestampSpinnerTextField = ((JSpinner.DefaultEditor) timestampSpinner.getEditor()).getTextField();
+        timestampSpinnerTextField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                String textValue = timestampSpinnerTextField.getText();
+                if (textValue.isBlank()) {
+                    timestampTextArea.setText("");
+                    return;
+                }
+                long value;
+
+                try {
+                    value = Long.parseLong(textValue);
+                } catch (NumberFormatException error) {
+                    timestampTextArea.setText("Error: " + error.getMessage());
+                    return;
+                }
+                timestampSpinner.setValue(value);
+                updateTimestampToolOnTimestampSpinnerUpdate();
+            }
+        });
     }
 
     private void updateTimestampToolOnTimestampSpinnerUpdate() {

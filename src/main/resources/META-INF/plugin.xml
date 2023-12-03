@@ -47,6 +47,9 @@
         <!--suppress  PluginXmlValidity -->
         <toolWindow id="DevToys" secondary="false" icon="ilovedevtoys/toolWindowIconSimple.svg" anchor="right"
                     factoryClass="lermitage.intellij.ilovedevtoys.toolwindow.DevToysToolWindowFactory" order="after Notifications"/>
+        <applicationService serviceImplementation="lermitage.intellij.ilovedevtoys.toolwindow.settings.DevToysToolWindowSettings"/>
+        <applicationService serviceImplementation="lermitage.intellij.ilovedevtoys.toolwindow.settings.JSONStringToolSettings"/>
+        <applicationService serviceImplementation="lermitage.intellij.ilovedevtoys.toolwindow.settings.TimestampToolSettings"/>
     </extensions>
 
 </idea-plugin>

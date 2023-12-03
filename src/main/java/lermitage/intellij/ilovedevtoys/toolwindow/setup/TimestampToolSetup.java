@@ -6,6 +6,7 @@ import lermitage.intellij.ilovedevtoys.tools.TimestampTools;
 import lermitage.intellij.ilovedevtoys.toolwindow.ComboBoxWithImageItem;
 import lermitage.intellij.ilovedevtoys.toolwindow.ComboBoxWithImageRenderer;
 import lermitage.intellij.ilovedevtoys.toolwindow.DevToysToolWindow;
+import lermitage.intellij.ilovedevtoys.toolwindow.settings.TimestampToolSettings;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -40,6 +41,7 @@ public class TimestampToolSetup extends AbstractToolSetup {
     private final JSpinner timestampMillisecondSpinner;
     private final JComboBox<String> timestampResolutionComboBox;
     private final JLabel timestampMillisecondLabel;
+    private String prevTimestampSpinnerTextFieldValue;
 
     public TimestampToolSetup(JComboBox<ComboBoxWithImageItem> timestampTimezoneComboBox,
                               JTextArea timestampTextArea,
@@ -79,6 +81,7 @@ public class TimestampToolSetup extends AbstractToolSetup {
     }
 
     public void setup() {
+        TimestampToolSettings settings = TimestampToolSettings.getInstance();
         timestampTimezoneComboBox.setRenderer(new ComboBoxWithImageRenderer());
 
         // populate the ZoneId selector
@@ -97,7 +100,7 @@ public class TimestampToolSetup extends AbstractToolSetup {
         // select default ZoneId in selector
         for (int i = 0; i < timestampTimezoneComboBox.getItemCount(); i++) {
             ComboBoxWithImageItem comboBoxWithImageItem = timestampTimezoneComboBox.getItemAt(i);
-            if (comboBoxWithImageItem.title().equalsIgnoreCase(ZoneId.systemDefault().toString())) {
+            if (comboBoxWithImageItem.title().equalsIgnoreCase(settings.TIMEZONE)) {
                 timestampTimezoneComboBox.setSelectedIndex(i);
                 break;
             }
@@ -121,6 +124,7 @@ public class TimestampToolSetup extends AbstractToolSetup {
         timestampSpinner.setModel(new SpinnerNumberModel(now, 0D, 9999999999999D, 1D));
         timestampSpinner.setEditor(new JSpinner.NumberEditor(timestampSpinner, "#"));
         timestampSpinner.setValue(now);
+        prevTimestampSpinnerTextFieldValue = String.valueOf(now);
 
         timestampYearSpinner.setEditor(new JSpinner.NumberEditor(timestampYearSpinner, "#"));
         timestampMonthSpinner.setEditor(new JSpinner.NumberEditor(timestampMonthSpinner, "#"));
@@ -165,6 +169,15 @@ public class TimestampToolSetup extends AbstractToolSetup {
         timestampMinuteSpinner.addChangeListener(e -> updateTimestampToolOnTimestampFieldsUpdate());
         timestampSecondSpinner.addChangeListener(e -> updateTimestampToolOnTimestampFieldsUpdate());
         timestampMillisecondSpinner.addChangeListener(e -> updateTimestampToolOnTimestampFieldsUpdate());*/
+
+        timestampTimezoneComboBox.addActionListener(e -> {
+            ComboBoxWithImageItem selectedItem = timestampTimezoneComboBox.getItemAt(
+                timestampTimezoneComboBox.getSelectedIndex()
+            );
+            if (selectedItem != null && !selectedItem.title().equals(settings.TIMEZONE)) {
+                settings.TIMEZONE = selectedItem.title();
+            }
+        });
 
         timestampFilterTextField.addKeyListener(new KeyListener() {
             @Override
@@ -219,6 +232,40 @@ public class TimestampToolSetup extends AbstractToolSetup {
         timestampUpdateFromFieldsButton.setIcon(IconLoader.getIcon("ilovedevtoys/toolicons/refresh.svg", DevToysToolWindow.class));
         timestampUpdateFromTimestampButton.addActionListener(e -> updateTimestampToolOnTimestampSpinnerUpdate());
         timestampUpdateFromFieldsButton.addActionListener(e -> updateTimestampToolOnTimestampFieldsUpdate());
+
+        JTextField timestampSpinnerTextField = ((JSpinner.DefaultEditor) timestampSpinner.getEditor()).getTextField();
+        timestampSpinnerTextField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                String textValue = timestampSpinnerTextField.getText();
+                if (textValue.equals(prevTimestampSpinnerTextFieldValue))
+                    return;
+
+                if (textValue.isBlank()) {
+                    timestampTextArea.setText("");
+                    prevTimestampSpinnerTextFieldValue = textValue;
+                    return;
+                }
+                long value;
+                try {
+                    value = Long.parseLong(textValue);
+                } catch (NumberFormatException error) {
+                    timestampTextArea.setText("Error: " + error.getMessage());
+                    return;
+                }
+                timestampSpinner.setValue(value);
+                updateTimestampToolOnTimestampSpinnerUpdate();
+                prevTimestampSpinnerTextFieldValue = textValue;
+            }
+        });
     }
 
     private void updateTimestampToolOnTimestampSpinnerUpdate() {

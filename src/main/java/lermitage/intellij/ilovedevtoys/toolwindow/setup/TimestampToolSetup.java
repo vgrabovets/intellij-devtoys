@@ -41,6 +41,7 @@ public class TimestampToolSetup extends AbstractToolSetup {
     private final JSpinner timestampMillisecondSpinner;
     private final JComboBox<String> timestampResolutionComboBox;
     private final JLabel timestampMillisecondLabel;
+    private String prevTimestampSpinnerTextFieldValue;
 
     public TimestampToolSetup(JComboBox<ComboBoxWithImageItem> timestampTimezoneComboBox,
                               JTextArea timestampTextArea,
@@ -123,6 +124,7 @@ public class TimestampToolSetup extends AbstractToolSetup {
         timestampSpinner.setModel(new SpinnerNumberModel(now, 0D, 9999999999999D, 1D));
         timestampSpinner.setEditor(new JSpinner.NumberEditor(timestampSpinner, "#"));
         timestampSpinner.setValue(now);
+        prevTimestampSpinnerTextFieldValue = String.valueOf(now);
 
         timestampYearSpinner.setEditor(new JSpinner.NumberEditor(timestampYearSpinner, "#"));
         timestampMonthSpinner.setEditor(new JSpinner.NumberEditor(timestampMonthSpinner, "#"));
@@ -244,12 +246,15 @@ public class TimestampToolSetup extends AbstractToolSetup {
             @Override
             public void keyReleased(KeyEvent e) {
                 String textValue = timestampSpinnerTextField.getText();
+                if (textValue.equals(prevTimestampSpinnerTextFieldValue))
+                    return;
+
                 if (textValue.isBlank()) {
                     timestampTextArea.setText("");
+                    prevTimestampSpinnerTextFieldValue = textValue;
                     return;
                 }
                 long value;
-
                 try {
                     value = Long.parseLong(textValue);
                 } catch (NumberFormatException error) {
@@ -258,6 +263,7 @@ public class TimestampToolSetup extends AbstractToolSetup {
                 }
                 timestampSpinner.setValue(value);
                 updateTimestampToolOnTimestampSpinnerUpdate();
+                prevTimestampSpinnerTextFieldValue = textValue;
             }
         });
     }
